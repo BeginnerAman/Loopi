@@ -63,6 +63,17 @@ export const MESSAGE_PRESETS = [
   }
 ];
 
+export const FRAME_STYLES = [
+  { id: 'corners', name: 'Modern Corners', icon: '⌜⌟' },
+  { id: 'box', name: 'Classic Rectangle', icon: '◻' },
+  { id: 'double', name: 'Double Border', icon: '回' },
+  { id: 'neon', name: 'Neon Glow Border', icon: '⚡' },
+  { id: 'vintage', name: 'Vintage Stationery', icon: '📜' },
+  { id: 'dotted', name: 'Dotted Tech', icon: '⬚' },
+  { id: 'gradient', name: 'Gradient Aura', icon: '🌈' },
+  { id: 'none', name: 'None (No Frame)', icon: '🚫' }
+];
+
 export const SCENES = [
   {
     id: 'aurora',
@@ -72,6 +83,7 @@ export const SCENES = [
     paletteIndex: 0,
     font: 'Outfit',
     anim: 'wave',
+    frameStyle: 'corners',
     doodles: ['spark', 'stars'],
     bgType: 'aurora'
   },
@@ -83,6 +95,7 @@ export const SCENES = [
     paletteIndex: 1,
     font: 'Playfair Display',
     anim: 'cinematic',
+    frameStyle: 'double',
     doodles: ['stars', 'shooting_star'],
     bgType: 'moonlight'
   },
@@ -94,6 +107,7 @@ export const SCENES = [
     paletteIndex: 2,
     font: 'Inter',
     anim: 'type',
+    frameStyle: 'corners',
     doodles: ['rain', 'drizzle'],
     bgType: 'rain'
   },
@@ -105,6 +119,7 @@ export const SCENES = [
     paletteIndex: 4,
     font: 'Caveat',
     anim: 'fade',
+    frameStyle: 'corners',
     doodles: ['clouds', 'twinkle'],
     bgType: 'cloudy'
   },
@@ -116,6 +131,7 @@ export const SCENES = [
     paletteIndex: 0,
     font: 'Dancing Script',
     anim: 'pop',
+    frameStyle: 'gradient',
     doodles: ['twinkle', 'spark'],
     bgType: 'dreamy'
   },
@@ -127,6 +143,7 @@ export const SCENES = [
     paletteIndex: 3,
     font: 'Playfair Display',
     anim: 'fade',
+    frameStyle: 'vintage',
     doodles: ['petals', 'spark'],
     bgType: 'sakura'
   },
@@ -138,6 +155,7 @@ export const SCENES = [
     paletteIndex: 5,
     font: 'Caveat',
     anim: 'handwriting',
+    frameStyle: 'vintage',
     doodles: ['doodles'],
     bgType: 'paper'
   },
@@ -149,6 +167,7 @@ export const SCENES = [
     paletteIndex: 8,
     font: 'Outfit',
     anim: 'slide_up',
+    frameStyle: 'box',
     doodles: ['bubbles', 'spark'],
     bgType: 'glass'
   },
@@ -160,6 +179,7 @@ export const SCENES = [
     paletteIndex: 4,
     font: 'Montserrat',
     anim: 'wave',
+    frameStyle: 'corners',
     doodles: ['bubbles', 'twinkle'],
     bgType: 'ocean'
   },
@@ -171,6 +191,7 @@ export const SCENES = [
     paletteIndex: 9,
     font: 'Inter',
     anim: 'neon',
+    frameStyle: 'neon',
     doodles: ['spark', 'orbit'],
     bgType: 'city'
   },
@@ -182,6 +203,7 @@ export const SCENES = [
     paletteIndex: 6,
     font: 'Playfair Display',
     anim: 'slide_up',
+    frameStyle: 'double',
     doodles: ['butterflies', 'twinkle'],
     bgType: 'nature'
   },
@@ -193,6 +215,7 @@ export const SCENES = [
     paletteIndex: 8,
     font: 'Inter',
     anim: 'type',
+    frameStyle: 'box',
     doodles: ['stars'],
     bgType: 'minimal'
   },
@@ -204,6 +227,7 @@ export const SCENES = [
     paletteIndex: 0,
     font: 'Outfit',
     anim: 'pop',
+    frameStyle: 'neon',
     doodles: ['spark', 'twinkle'],
     bgType: 'purple'
   },
@@ -215,6 +239,7 @@ export const SCENES = [
     paletteIndex: 10,
     font: 'Cinzel',
     anim: 'cinematic',
+    frameStyle: 'none',
     doodles: ['shooting_star', 'spark'],
     bgType: 'cinematic'
   }

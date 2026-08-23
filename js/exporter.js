@@ -1,11 +1,11 @@
 /**
  * DP Creator Studio V4 - High-Performance Export Studio
- * Watermark-Free GIF, MP4, WebM & PNG Exporters with Progress Callbacks
+ * Watermark-Free GIF, MP4, WebM & PNG Exporters with Synchronized Timing
  */
 
 export class Exporter {
   constructor(renderFrameCallback) {
-    this.renderFrame = renderFrameCallback; // (ctx, W, H, time, elapsed) => void
+    this.renderFrame = renderFrameCallback; // (ctx, W, H, time, elapsed, timing) => void
     this.isExporting = false;
   }
 
@@ -24,7 +24,7 @@ export class Exporter {
   }
 
   // PNG Snapshot export
-  async exportPNG(options) {
+  async exportPNG(options, timing) {
     const size = options.resolution || 720;
     const offscreen = document.createElement('canvas');
     offscreen.width = size;
@@ -32,7 +32,7 @@ export class Exporter {
     const ctx = offscreen.getContext('2d');
 
     const now = performance.now();
-    this.renderFrame(ctx, size, size, now, options.elapsed || 1500);
+    this.renderFrame(ctx, size, size, now, options.elapsed || 1500, timing);
 
     return new Promise(resolve => {
       offscreen.toBlob(blob => {
@@ -44,14 +44,14 @@ export class Exporter {
   }
 
   // MP4 / WebM Video Export via MediaRecorder
-  async exportVideo(options, onProgress) {
+  async exportVideo(options, timing, onProgress) {
     if (this.isExporting) return;
     this.isExporting = true;
 
     try {
       const size = options.resolution || 720;
       const fps = options.fps || 30;
-      const durationMs = options.durationMs || 4000;
+      const durationMs = timing ? timing.totalMs : (options.durationMs || 4000);
       const totalFrames = Math.ceil((durationMs / 1000) * fps);
 
       const offscreen = document.createElement('canvas');
@@ -109,12 +109,12 @@ export class Exporter {
       for (let f = 0; f < totalFrames; f++) {
         const simTime = startTime + f * frameInterval;
         const simElapsed = f * frameInterval;
-        this.renderFrame(ctx, size, size, simTime, simElapsed);
+        this.renderFrame(ctx, size, size, simTime, simElapsed, timing);
 
         if (onProgress) {
           onProgress(Math.round((f / totalFrames) * 95));
         }
-        await new Promise(r => setTimeout(r, Math.max(4, frameInterval * 0.8)));
+        await new Promise(r => setTimeout(r, Math.max(8, frameInterval * 0.9)));
       }
 
       recorder.stop();
@@ -127,14 +127,14 @@ export class Exporter {
   }
 
   // GIF Export with embedded fast palette quantization and LZW encoding
-  async exportGIF(options, onProgress) {
+  async exportGIF(options, timing, onProgress) {
     if (this.isExporting) return;
     this.isExporting = true;
 
     try {
-      const size = Math.min(512, options.resolution || 360); // Optimize GIF size for mobile
+      const size = Math.min(512, options.resolution || 360);
       const fps = Math.min(24, options.fps || 15);
-      const durationMs = Math.min(6000, options.durationMs || 3500);
+      const durationMs = timing ? timing.totalMs : (options.durationMs || 3500);
       const totalFrames = Math.ceil((durationMs / 1000) * fps);
 
       const offscreen = document.createElement('canvas');
@@ -150,7 +150,7 @@ export class Exporter {
       for (let f = 0; f < totalFrames; f++) {
         const simTime = startTime + f * frameInterval;
         const simElapsed = f * frameInterval;
-        this.renderFrame(ctx, size, size, simTime, simElapsed);
+        this.renderFrame(ctx, size, size, simTime, simElapsed, timing);
 
         const imgData = ctx.getImageData(0, 0, size, size);
         frames.push(imgData.data);
@@ -158,8 +158,7 @@ export class Exporter {
         if (onProgress) {
           onProgress(Math.round((f / totalFrames) * 50));
         }
-        // Yield to maintain responsiveness
-        if (f % 5 === 0) {
+        if (f % 4 === 0) {
           await new Promise(r => setTimeout(r, 0));
         }
       }
@@ -183,7 +182,6 @@ export class Exporter {
 
   // Client-side lightweight high-quality GIF89a builder
   async encodeGIF(frames, w, h, delayCs, onProg) {
-    // Generate an adaptive 256-color palette based on 5-bit color sampling
     const palette = this.buildPalette(frames[0]);
     const colorMap = new Map();
     for (let i = 0; i < palette.length; i++) {
@@ -229,7 +227,6 @@ export class Exporter {
         const key = `${r},${g},${b}`;
         let colIdx = colorMap.get(key);
         if (colIdx === undefined) {
-          // Find nearest color in palette
           colIdx = this.findClosestColor(r, g, b, palette);
           colorMap.set(key, colIdx);
         }
@@ -238,12 +235,12 @@ export class Exporter {
 
       // LZW compression
       const lzwData = this.lzwCompress(indexed, 8);
-      push(8); // min code size
+      push(8);
       for (let i = 0; i < lzwData.length; i += 255) {
         const chunkLen = Math.min(255, lzwData.length - i);
         push(chunkLen, ...lzwData.slice(i, i + chunkLen));
       }
-      push(0); // block terminator
+      push(0);
 
       if (onProg && fIdx % 3 === 0) {
         onProg(fIdx / total);
@@ -259,7 +256,6 @@ export class Exporter {
     const palette = [];
     const seen = new Set();
 
-    // Sample from first frame
     for (let i = 0; i < firstFrameRGBA.length; i += 16) {
       const r = firstFrameRGBA[i] & 0xf8;
       const g = firstFrameRGBA[i + 1] & 0xf8;
@@ -272,7 +268,6 @@ export class Exporter {
       }
     }
 
-    // Fill standard spectrum if fewer than 256 colors
     while (palette.length < 256) {
       const idx = palette.length;
       palette.push([

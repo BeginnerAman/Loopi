@@ -1,11 +1,12 @@
 /**
  * DP Creator Studio V4 - Main App Controller & State Management
- * Mobile-First, 60fps Canvas Loop, Multi-Doodle Layering, AI Auto-Style, Telegram DP Circular Preview
+ * Mobile-First, 60fps Canvas Loop, Multi-Doodle Layering, AI Auto-Style, Frame Studio, Telegram DP Mask
  */
 
 import {
   DEFAULT_TEXT,
   MESSAGE_PRESETS,
+  FRAME_STYLES,
   SCENES,
   PALETTES,
   DOODLE_LIBRARY,
@@ -31,7 +32,7 @@ class DPStudioApp {
     this.backgrounds = new BackgroundRenderer();
     this.textEngine = new TextRenderer();
     this.timeline = new TimelineSequencer();
-    this.exporter = new Exporter((ctx, w, h, t, el) => this.renderFrame(ctx, w, h, t, el));
+    this.exporter = new Exporter((ctx, w, h, t, el, timing) => this.renderFrame(ctx, w, h, t, el, timing));
 
     // Master App State
     this.state = {
@@ -49,6 +50,13 @@ class DPStudioApp {
       },
       colorMode: 'solid', // 'solid', 'gradient', 'rainbow', 'glow'
       
+      // Frame Studio
+      frameStyle: 'corners', // 'none', 'corners', 'box', 'double', 'neon', 'vintage', 'dotted', 'gradient'
+      frameColor: null,
+      frameWidth: 2,
+      framePadding: 26,
+      showFrame: true,
+
       // Typography
       font: 'Outfit',
       fontSize: 52,
@@ -86,7 +94,6 @@ class DPStudioApp {
       animMode: 'type',
       speed: 70,
       showCursor: true,
-      showFrame: true,
       loop: true,
       holdDuration: 2.5,
 
@@ -100,6 +107,7 @@ class DPStudioApp {
 
   init() {
     this.buildPresetsUI();
+    this.buildFramesUI();
     this.buildScenesUI();
     this.buildPalettesUI();
     this.buildDoodlesUI();
@@ -130,12 +138,24 @@ class DPStudioApp {
   }
 
   // Master frame rendering used by both live preview and exporter
-  renderFrame(ctx, W, H, time, elapsed) {
+  renderFrame(ctx, W, H, time, elapsed, customTiming) {
     const palette = this.getCurrentPalette();
+    const timing = customTiming || this.timeline.computeDuration(
+      this.state.text.length,
+      this.state.speed,
+      this.state.animMode,
+      this.state.holdDuration,
+      this.state.loop
+    );
 
-    // 1. Draw Immersive Scene Background
+    // 1. Draw Immersive Scene Background + Frame Studio
+    const frameColor = this.state.frameColor || palette.primary;
     this.backgrounds.draw(ctx, W, H, time, this.state.sceneId, palette, {
-      showFrame: this.state.showFrame
+      frameStyle: this.state.frameStyle,
+      frameColor: frameColor,
+      frameWidth: this.state.frameWidth * (W / 720),
+      framePadding: this.state.framePadding * (W / 720),
+      showFrame: this.state.showFrame && this.state.frameStyle !== 'none'
     });
 
     // 2. Draw Multi-Layer Particle Doodles
@@ -179,10 +199,11 @@ class DPStudioApp {
       maxWidth: this.state.maxWidth,
       animMode: this.state.animMode,
       speed: this.state.speed,
-      showCursor: this.state.showCursor
+      showCursor: this.state.showCursor,
+      loop: this.state.loop
     };
 
-    this.textEngine.draw(ctx, W, H, time, elapsed, textConfig, palette);
+    this.textEngine.draw(ctx, W, H, time, elapsed, textConfig, palette, timing);
   }
 
   // Animation Loop Tick
@@ -191,13 +212,14 @@ class DPStudioApp {
       this.state.text.length,
       this.state.speed,
       this.state.animMode,
-      this.state.holdDuration
+      this.state.holdDuration,
+      this.state.loop
     );
 
     const elapsed = this.timeline.getElapsed(now, timing.totalMs, this.state.loop);
 
     // Render Canvas
-    this.renderFrame(this.ctx, this.W, this.H, now, elapsed);
+    this.renderFrame(this.ctx, this.W, this.H, now, elapsed, timing);
 
     // Update Visual Timeline Bar
     const progress = Math.min(1, Math.max(0, elapsed / timing.totalMs));
@@ -211,7 +233,7 @@ class DPStudioApp {
     }
   }
 
-  // Build UI Components dynamically
+  // Build Presets UI
   buildPresetsUI() {
     const container = document.getElementById('messagePresetsList');
     if (!container) return;
@@ -255,6 +277,19 @@ class DPStudioApp {
     });
   }
 
+  buildFramesUI() {
+    const select = document.getElementById('frameStyleSelect');
+    if (!select) return;
+    select.innerHTML = '';
+
+    FRAME_STYLES.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = `${f.icon} ${f.name}`;
+      select.appendChild(opt);
+    });
+  }
+
   buildScenesUI() {
     const container = document.getElementById('scenesGrid');
     if (!container) return;
@@ -284,6 +319,7 @@ class DPStudioApp {
     this.state.paletteIndex = sc.paletteIndex;
     this.state.font = sc.font;
     this.state.animMode = sc.anim;
+    this.state.frameStyle = sc.frameStyle || 'corners';
     this.state.activeDoodles = [...sc.doodles];
     this.timeline.reset();
     this.syncUIFromState();
@@ -310,10 +346,10 @@ class DPStudioApp {
 
       btn.onclick = () => {
         this.state.paletteIndex = idx;
-        // Reset custom overrides to let palette take full harmony
         this.state.customColors.text = null;
         this.state.customColors.glow = null;
         this.state.customColors.doodle = null;
+        this.state.frameColor = null;
         this.timeline.reset();
         this.syncUIFromState();
       };
@@ -340,7 +376,6 @@ class DPStudioApp {
             this.state.activeDoodles = cur.filter(x => x !== d.id);
           }
         } else {
-          // Allow up to 3 simultaneous doodles for rich layering
           if (cur.length >= 3) {
             cur.shift();
           }
@@ -409,8 +444,8 @@ class DPStudioApp {
     const randomScene = SCENES[Math.floor(Math.random() * SCENES.length)];
     const randomAnim = ANIMATIONS[Math.floor(Math.random() * ANIMATIONS.length)].id;
     const randomFont = FONTS[Math.floor(Math.random() * FONTS.length)].family;
+    const randomFrame = FRAME_STYLES[Math.floor(Math.random() * FRAME_STYLES.length)].id;
     
-    // Pick 2 harmonious doodles
     const pool = DOODLE_LIBRARY.map(d => d.id);
     const d1 = pool[Math.floor(Math.random() * pool.length)];
     let d2 = pool[Math.floor(Math.random() * pool.length)];
@@ -420,19 +455,21 @@ class DPStudioApp {
     this.state.paletteIndex = Math.floor(Math.random() * PALETTES.length);
     this.state.font = randomFont;
     this.state.animMode = randomAnim;
+    this.state.frameStyle = randomFrame;
     this.state.activeDoodles = [d1, d2];
     this.state.fontSize = 42 + Math.floor(Math.random() * 24);
     this.state.glowBlur = 18 + Math.floor(Math.random() * 24);
     this.state.customColors.text = null;
     this.state.customColors.glow = null;
     this.state.customColors.doodle = null;
+    this.state.frameColor = null;
 
     this.timeline.reset();
     this.syncUIFromState();
     this.showToast('✨ New Design Created!');
   }
 
-  // 🧠 "Auto Style": Intelligent Aesthetic Matcher based on message sentiment
+  // 🧠 "Auto Style": Intelligent Aesthetic Matcher
   autoStyle() {
     const text = this.state.text.toLowerCase();
 
@@ -441,6 +478,7 @@ class DPStudioApp {
       this.state.paletteIndex = 0; // Lavender Dream
       this.state.font = 'Outfit';
       this.state.animMode = 'type';
+      this.state.frameStyle = 'neon';
       this.state.activeDoodles = ['spark', 'twinkle'];
       this.state.glowBlur = 28;
     } else if (text.includes('❤️') || text.includes('love') || text.includes('sweet')) {
@@ -448,6 +486,7 @@ class DPStudioApp {
       this.state.paletteIndex = 2; // Rose Dust
       this.state.font = 'Playfair Display';
       this.state.animMode = 'pop';
+      this.state.frameStyle = 'vintage';
       this.state.activeDoodles = ['hearts', 'petals'];
       this.state.glowBlur = 30;
     } else if (text.includes('morning') || text.includes('☀️') || text.includes('sun')) {
@@ -455,24 +494,28 @@ class DPStudioApp {
       this.state.paletteIndex = 7; // Sunset / Golden
       this.state.font = 'Outfit';
       this.state.animMode = 'slide_up';
+      this.state.frameStyle = 'double';
       this.state.activeDoodles = ['twinkle', 'spark'];
     } else if (text.includes('night') || text.includes('🌙') || text.includes('dream')) {
       this.state.sceneId = 'moonlight';
       this.state.paletteIndex = 1; // Midnight Blue
       this.state.font = 'Playfair Display';
       this.state.animMode = 'cinematic';
+      this.state.frameStyle = 'corners';
       this.state.activeDoodles = ['stars', 'shooting_star'];
     } else if (text.includes('coffee') || text.includes('☕') || text.includes('note')) {
       this.state.sceneId = 'paper';
       this.state.paletteIndex = 5; // Warm Coffee
       this.state.font = 'Caveat';
       this.state.animMode = 'handwriting';
+      this.state.frameStyle = 'vintage';
       this.state.activeDoodles = ['doodles'];
     } else {
       this.state.sceneId = 'aurora';
       this.state.paletteIndex = 0;
       this.state.font = 'Outfit';
       this.state.animMode = 'wave';
+      this.state.frameStyle = 'corners';
       this.state.activeDoodles = ['spark', 'twinkle'];
     }
 
@@ -519,6 +562,14 @@ class DPStudioApp {
     setOut('textOpacityOut', `${this.state.opacity}%`);
     setVal('colorMode', this.state.colorMode);
 
+    // Frame UI
+    setVal('frameStyleSelect', this.state.frameStyle);
+    setVal('frameWidth', this.state.frameWidth);
+    setOut('frameWidthOut', `${this.state.frameWidth}px`);
+    setVal('framePadding', this.state.framePadding);
+    setOut('framePaddingOut', `${this.state.framePadding}px`);
+    setChecked('showFrame', this.state.showFrame && this.state.frameStyle !== 'none');
+
     setVal('glowBlur', this.state.glowBlur);
     setOut('glowBlurOut', this.state.glowBlur);
     setVal('strokeWidth', this.state.strokeWidth);
@@ -549,15 +600,12 @@ class DPStudioApp {
     setVal('animSpeed', this.state.speed);
     setOut('animSpeedOut', this.state.speed);
     setChecked('showCursor', this.state.showCursor);
-    setChecked('showFrame', this.state.showFrame);
     setChecked('loopToggle', this.state.loop);
 
-    // Sync scenes active state
     document.querySelectorAll('.sceneCard').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.id === this.state.sceneId);
     });
 
-    // Sync palettes active state
     document.querySelectorAll('.paletteCard').forEach(btn => {
       btn.classList.toggle('active', +btn.dataset.idx === this.state.paletteIndex);
     });
@@ -584,6 +632,28 @@ class DPStudioApp {
       this.state.text = e.target.value;
       this.timeline.reset();
       this.highlightActivePreset();
+    };
+
+    // Frame Studio Controls
+    $('frameStyleSelect').onchange = e => {
+      this.state.frameStyle = e.target.value;
+      this.state.showFrame = e.target.value !== 'none';
+      $('showFrame').checked = this.state.showFrame;
+    };
+    $('frameColorPicker').oninput = e => (this.state.frameColor = e.target.value);
+    $('frameWidth').oninput = e => {
+      this.state.frameWidth = +e.target.value;
+      $('frameWidthOut').textContent = `${e.target.value}px`;
+    };
+    $('framePadding').oninput = e => {
+      this.state.framePadding = +e.target.value;
+      $('framePaddingOut').textContent = `${e.target.value}px`;
+    };
+    $('showFrame').onchange = e => {
+      this.state.showFrame = e.target.checked;
+      if (!e.target.checked) this.state.frameStyle = 'none';
+      else if (this.state.frameStyle === 'none') this.state.frameStyle = 'corners';
+      $('frameStyleSelect').value = this.state.frameStyle;
     };
 
     // Typography
@@ -681,8 +751,10 @@ class DPStudioApp {
       this.timeline.reset();
     };
     $('showCursor').onchange = e => (this.state.showCursor = e.target.checked);
-    $('showFrame').onchange = e => (this.state.showFrame = e.target.checked);
-    $('loopToggle').onchange = e => (this.state.loop = e.target.checked);
+    $('loopToggle').onchange = e => {
+      this.state.loop = e.target.checked;
+      this.timeline.reset();
+    };
 
     // Interactive Timeline Scrubber
     const timelineTrack = $('timelineTrack');
@@ -694,7 +766,8 @@ class DPStudioApp {
         this.state.text.length,
         this.state.speed,
         this.state.animMode,
-        this.state.holdDuration
+        this.state.holdDuration,
+        this.state.loop
       );
       this.timeline.setScrub(prog, timing.totalMs);
     };
@@ -776,19 +849,21 @@ class DPStudioApp {
       this.state.text.length,
       this.state.speed,
       this.state.animMode,
-      this.state.holdDuration
+      this.state.holdDuration,
+      this.state.loop
     );
 
     try {
       if (format === 'png') {
         exportStatus.textContent = 'Generating Crisp Snapshot...';
-        await this.exporter.exportPNG({ resolution: res });
+        await this.exporter.exportPNG({ resolution: res }, timing);
         progBar.style.width = '100%';
         progText.textContent = '100%';
       } else if (format === 'gif') {
         exportStatus.textContent = 'Rendering GIF frames & quantizing colors...';
         await this.exporter.exportGIF(
           { resolution: res, fps, durationMs: timing.totalMs },
+          timing,
           p => {
             progBar.style.width = `${p}%`;
             progText.textContent = `${p}%`;
@@ -798,6 +873,7 @@ class DPStudioApp {
         exportStatus.textContent = 'Recording smooth 60fps video stream...';
         await this.exporter.exportVideo(
           { resolution: res, fps, durationMs: timing.totalMs, quality: 'high' },
+          timing,
           p => {
             progBar.style.width = `${p}%`;
             progText.textContent = `${p}%`;

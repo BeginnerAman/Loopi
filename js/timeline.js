@@ -1,19 +1,20 @@
 /**
  * DP Creator Studio V4 - Timeline & Motion Sequencer
- * Animation clock, loop cycle timing, hold phase, interactive scrubbing
+ * 3-Phase Lifecycle Timing: Intro -> Hold -> Outro -> Seamless Loop
  */
 
 export class TimelineSequencer {
   constructor() {
     this.startTime = performance.now();
     this.isPaused = false;
+    this.pauseTimestamp = 0;
     this.scrubTime = null;
-    this.listeners = [];
   }
 
   reset() {
     this.startTime = performance.now();
     this.scrubTime = null;
+    this.isPaused = false;
   }
 
   pause() {
@@ -38,27 +39,35 @@ export class TimelineSequencer {
 
   setScrub(progress01, totalDurationMs) {
     this.isPaused = true;
+    this.pauseTimestamp = performance.now();
     this.scrubTime = progress01 * totalDurationMs;
   }
 
-  computeDuration(textLength, speed, animMode, holdSeconds = 2.5) {
-    let animInDuration = 1200;
+  computeDuration(textLength, speed, animMode, holdSeconds = 2.5, loop = true) {
+    let inMs = 1000;
     if (animMode === 'type' || animMode === 'handwriting' || animMode === 'cascade') {
-      animInDuration = Math.max(800, textLength * speed + 500);
+      inMs = Math.max(700, textLength * speed + 300);
     } else if (animMode === 'retype') {
-      animInDuration = (textLength + 20) * speed + 1200;
+      inMs = (textLength + 16) * speed + 900;
     } else if (animMode === 'cinematic') {
-      animInDuration = 1600;
+      inMs = 1300;
+    } else if (animMode === 'fade') {
+      inMs = 900;
+    } else if (animMode === 'pop') {
+      inMs = 850;
     } else {
-      animInDuration = 1100;
+      inMs = 900;
     }
 
-    const holdMs = holdSeconds * 1000;
-    const totalMs = animInDuration + holdMs;
+    const holdMs = Math.max(1600, (holdSeconds || 2.5) * 1000);
+    const outMs = loop ? 650 : 0; // Smooth 650ms outro dissolve/exit when loop is enabled
+    const totalMs = inMs + holdMs + outMs;
+
     return {
-      animInDuration,
+      inMs,
       holdMs,
-      totalMs: Math.max(3000, Math.min(12000, totalMs))
+      outMs,
+      totalMs: Math.max(2800, totalMs)
     };
   }
 
@@ -75,5 +84,44 @@ export class TimelineSequencer {
       return Math.min(totalDurationMs, raw);
     }
     return raw % totalDurationMs;
+  }
+
+  getLifecycle(elapsed, timing, shouldLoop = true) {
+    const { inMs, holdMs, outMs } = timing;
+
+    if (elapsed < inMs) {
+      const p = Math.max(0, Math.min(1, elapsed / inMs));
+      return {
+        phase: 'in',
+        progress: p,
+        alpha: Math.min(1, p * 1.5),
+        scale: 1,
+        isHold: false,
+        isOut: false
+      };
+    } else if (elapsed < inMs + holdMs) {
+      const p = Math.max(0, Math.min(1, (elapsed - inMs) / holdMs));
+      return {
+        phase: 'hold',
+        progress: p,
+        holdElapsed: elapsed - inMs,
+        alpha: 1,
+        scale: 1,
+        isHold: true,
+        isOut: false
+      };
+    } else {
+      const outDuration = outMs || 650;
+      const p = Math.max(0, Math.min(1, (elapsed - inMs - holdMs) / outDuration));
+      const ease = p * p;
+      return {
+        phase: 'out',
+        progress: p,
+        alpha: Math.max(0, 1 - ease),
+        scale: 1 - ease * 0.08,
+        isHold: false,
+        isOut: true
+      };
+    }
   }
 }

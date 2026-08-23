@@ -1,6 +1,7 @@
 /**
  * DP Creator Studio V4 - Advanced Typography & Emoji Animation Engine
- * 15 Animation Styles, Deep Styling, Stroke/Outline, Shadow, Rainbow/Gradient fill, Emoji-Aware Pop
+ * 14 Animation Styles, 3-Phase Lifecycle (Intro -> Hold -> Outro),
+ * Stroke/Outline, Multi-line wrapping, Rainbow/Gradient fill, Emoji-Aware Pop
  */
 
 const EMOJI_REGEX = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu;
@@ -18,7 +19,6 @@ export class TextRenderer {
   // Parse text into tokens (characters and whole emoji glyphs)
   tokenize(text) {
     if (!text) return [];
-    // Using Intl.Segmenter if available or fallback regex/array spread
     if (typeof Intl !== 'undefined' && Intl.Segmenter) {
       const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
       return Array.from(segmenter.segment(text), s => s.segment);
@@ -57,7 +57,7 @@ export class TextRenderer {
     return lines.length > 0 ? lines : [''];
   }
 
-  draw(ctx, W, H, time, elapsed, config, palette) {
+  draw(ctx, W, H, time, elapsed, config, palette, timing) {
     const rawText = config.text || 'Hello Ji...😊';
     const fs = config.fontSize || 50;
     const fontName = config.font || 'Outfit';
@@ -67,16 +67,15 @@ export class TextRenderer {
     const lineHeightMult = config.lineHeight || 1.35;
     const align = config.align || 'center';
     const animMode = config.animMode || 'type';
-    const speed = config.speed || 70;
-    const glowBlur = config.glowBlur || 24;
+    const glowBlur = config.glowBlur || 26;
     const glowColor = config.glowColor || palette.glow;
-    const textMode = config.colorMode || 'solid'; // 'solid' | 'gradient' | 'rainbow' | 'glow'
+    const textMode = config.colorMode || 'solid';
     const textColor = config.textColor || palette.text;
     const strokeWidth = config.strokeWidth || 0;
     const strokeColor = config.strokeColor || '#000000';
-    const shadowOffset = config.shadowOffset || 0;
     const shadowBlur = config.shadowBlur || 0;
-    const shadowColor = config.shadowColor || 'rgba(0,0,0,0.5)';
+    const shadowOffset = config.shadowOffset || 0;
+    const shadowColor = config.shadowColor || 'rgba(0,0,0,0.6)';
     const textOpacity = (config.opacity || 100) / 100;
     const posX = (config.posX !== undefined ? config.posX : 50) / 100;
     const posY = (config.posY !== undefined ? config.posY : 50) / 100;
@@ -97,134 +96,179 @@ export class TextRenderer {
     const tokens = this.tokenize(rawText);
     const totalChars = tokens.length;
 
-    // Animation progress calculation
+    // Determine 3-Phase Lifecycle
+    const { inMs, holdMs, outMs } = timing || { inMs: 1000, holdMs: 2500, outMs: 650, totalMs: 4150 };
+    let phase = 'in';
+    let phaseProgress = 0;
+
+    if (elapsed < inMs) {
+      phase = 'in';
+      phaseProgress = Math.max(0, Math.min(1, elapsed / inMs));
+    } else if (elapsed < inMs + holdMs) {
+      phase = 'hold';
+      phaseProgress = Math.max(0, Math.min(1, (elapsed - inMs) / holdMs));
+    } else {
+      phase = 'out';
+      phaseProgress = Math.max(0, Math.min(1, (elapsed - inMs - holdMs) / Math.max(1, outMs)));
+    }
+
+    // Animation calculation
     let visibleTokenCount = totalChars;
     let animAlpha = 1;
     let animScale = 1;
     let animOffsetX = 0;
     let animOffsetY = 0;
-    let animBlur = 0;
     let isTypingActive = false;
-    let emojiPopScale = 1;
     let emojiBurst = 0;
+    let customLetterRender = null;
 
-    switch (animMode) {
-      case 'type': {
-        const charDuration = speed;
-        visibleTokenCount = Math.min(totalChars, Math.max(0, Math.floor(elapsed / charDuration)));
-        isTypingActive = visibleTokenCount < totalChars;
-        // Emoji-aware pop when finished typing
-        if (visibleTokenCount >= totalChars) {
-          const finishedAt = totalChars * charDuration;
-          const afterElapsed = Math.max(0, elapsed - finishedAt);
-          if (afterElapsed < 800) {
-            const ep = afterElapsed / 800;
-            emojiPopScale = 1 + Math.sin(ep * Math.PI) * 0.45;
-            emojiBurst = 1 - ep;
+    if (phase === 'out') {
+      const outEase = phaseProgress * phaseProgress;
+      animAlpha = Math.max(0, 1 - outEase);
+      animScale = 1 - outEase * 0.08;
+      if (animMode === 'slide_up') animOffsetY = -outEase * 40;
+      else if (animMode === 'slide_down') animOffsetY = outEase * 40;
+      else if (animMode === 'slide_left') animOffsetX = -outEase * 60;
+      else if (animMode === 'slide_right') animOffsetX = outEase * 60;
+    } else {
+      switch (animMode) {
+        case 'type': {
+          if (phase === 'in') {
+            visibleTokenCount = Math.min(totalChars, Math.max(1, Math.floor(phaseProgress * totalChars)));
+            isTypingActive = visibleTokenCount < totalChars;
+          } else {
+            visibleTokenCount = totalChars;
+            const holdElapsed = elapsed - inMs;
+            if (holdElapsed < 800) {
+              const ep = holdElapsed / 800;
+              emojiBurst = 1 - ep;
+            }
           }
+          break;
         }
-        break;
-      }
-      case 'fade': {
-        const duration = 1200;
-        animAlpha = Math.min(1, Math.max(0, elapsed / duration));
-        break;
-      }
-      case 'pop': {
-        const duration = 900;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        // Elastic bounce easing
-        const c4 = (2 * Math.PI) / 3;
-        animScale = p === 0 ? 0 : p === 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * c4) + 1;
-        animAlpha = Math.min(1, p * 2);
-        break;
-      }
-      case 'slide_up': {
-        const duration = 900;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        const ease = 1 - Math.pow(1 - p, 3);
-        animOffsetY = (1 - ease) * 90;
-        animAlpha = ease;
-        break;
-      }
-      case 'slide_down': {
-        const duration = 900;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        const ease = 1 - Math.pow(1 - p, 3);
-        animOffsetY = (ease - 1) * 90;
-        animAlpha = ease;
-        break;
-      }
-      case 'slide_left': {
-        const duration = 900;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        const ease = 1 - Math.pow(1 - p, 3);
-        animOffsetX = (1 - ease) * 120;
-        animAlpha = ease;
-        break;
-      }
-      case 'slide_right': {
-        const duration = 900;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        const ease = 1 - Math.pow(1 - p, 3);
-        animOffsetX = (ease - 1) * 120;
-        animAlpha = ease;
-        break;
-      }
-      case 'zoom_in': {
-        const duration = 1000;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        const ease = 1 - Math.pow(1 - p, 3);
-        animScale = 0.3 + 0.7 * ease;
-        animAlpha = ease;
-        break;
-      }
-      case 'wave': {
-        animAlpha = Math.min(1, elapsed / 600);
-        break;
-      }
-      case 'cascade': {
-        const duration = speed * 1.5;
-        visibleTokenCount = Math.min(totalChars, Math.max(0, Math.floor(elapsed / duration)));
-        break;
-      }
-      case 'cinematic': {
-        const duration = 1400;
-        const p = Math.min(1, Math.max(0, elapsed / duration));
-        animAlpha = p;
-        animBlur = (1 - p) * 14;
-        break;
-      }
-      case 'handwriting': {
-        const duration = speed * 0.9;
-        visibleTokenCount = Math.min(totalChars, Math.max(0, Math.floor(elapsed / duration)));
-        isTypingActive = visibleTokenCount < totalChars;
-        break;
-      }
-      case 'neon': {
-        const p = elapsed / 1000;
-        const flicker = Math.sin(p * 18) > 0.1 ? 1 : 0.25;
-        animAlpha = Math.min(1, p) * flicker;
-        break;
-      }
-      case 'retype': {
-        const cycle = (totalChars + 20) * speed;
-        const local = elapsed % cycle;
-        const typeTime = totalChars * speed;
-        const pauseTime = 1200;
-        if (local < typeTime) {
-          visibleTokenCount = Math.floor(local / speed);
-        } else if (local < typeTime + pauseTime) {
-          visibleTokenCount = totalChars;
-        } else {
-          const deleteElapsed = local - (typeTime + pauseTime);
-          visibleTokenCount = Math.max(2, totalChars - Math.floor(deleteElapsed / (speed * 0.6)));
+        case 'fade': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animAlpha = ease;
+            animOffsetY = (1 - ease) * 20;
+          }
+          break;
         }
-        isTypingActive = visibleTokenCount < totalChars;
-        break;
+        case 'pop': {
+          if (phase === 'in') {
+            const p = phaseProgress;
+            const c4 = (2 * Math.PI) / 3;
+            animScale = p === 0 ? 0 : p === 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * c4) + 1;
+            animAlpha = Math.min(1, p * 2.5);
+          }
+          break;
+        }
+        case 'slide_up': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animOffsetY = (1 - ease) * 80;
+            animAlpha = ease;
+          }
+          break;
+        }
+        case 'slide_down': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animOffsetY = (ease - 1) * 80;
+            animAlpha = ease;
+          }
+          break;
+        }
+        case 'slide_left': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animOffsetX = (1 - ease) * 110;
+            animAlpha = ease;
+          }
+          break;
+        }
+        case 'slide_right': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animOffsetX = (ease - 1) * 110;
+            animAlpha = ease;
+          }
+          break;
+        }
+        case 'zoom_in': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animScale = 0.4 + 0.6 * ease;
+            animAlpha = ease;
+          } else {
+            animScale = 1 + Math.sin(phaseProgress * Math.PI) * 0.03;
+          }
+          break;
+        }
+        case 'wave': {
+          if (phase === 'in') {
+            animAlpha = Math.min(1, phaseProgress * 1.5);
+          }
+          break;
+        }
+        case 'cascade': {
+          customLetterRender = 'cascade';
+          if (phase === 'hold') {
+            const holdElapsed = elapsed - inMs;
+            if (holdElapsed < 700) {
+              emojiBurst = 1 - holdElapsed / 700;
+            }
+          }
+          break;
+        }
+        case 'cinematic': {
+          if (phase === 'in') {
+            animAlpha = phaseProgress;
+            animScale = 1.05 - (1 - phaseProgress) * 0.05;
+          }
+          break;
+        }
+        case 'handwriting': {
+          if (phase === 'in') {
+            visibleTokenCount = Math.min(totalChars, Math.max(1, Math.floor(phaseProgress * totalChars)));
+            isTypingActive = visibleTokenCount < totalChars;
+          }
+          break;
+        }
+        case 'neon': {
+          if (phase === 'in') {
+            // Realistic dual-strike electrical tube ignition
+            let flicker = 1;
+            if (phaseProgress < 0.15) flicker = Math.random() > 0.4 ? 1 : 0.1;
+            else if (phaseProgress < 0.3) flicker = 0.2;
+            else if (phaseProgress < 0.45) flicker = Math.random() > 0.3 ? 1 : 0.2;
+            else flicker = 0.7 + 0.3 * phaseProgress;
+            animAlpha = flicker;
+          } else {
+            // Subtle organic neon buzzing hum
+            animAlpha = 0.94 + 0.06 * Math.sin(time * 0.03);
+          }
+          break;
+        }
+        case 'retype': {
+          const halfText = Math.max(1, Math.floor(totalChars * 0.55));
+          if (phase === 'in') {
+            if (phaseProgress < 0.5) {
+              visibleTokenCount = Math.floor((phaseProgress / 0.5) * totalChars);
+            } else if (phaseProgress < 0.75) {
+              const delProg = (phaseProgress - 0.5) / 0.25;
+              visibleTokenCount = Math.max(halfText, totalChars - Math.floor(delProg * (totalChars - halfText)));
+            } else {
+              const retProg = (phaseProgress - 0.75) / 0.25;
+              visibleTokenCount = halfText + Math.floor(retProg * (totalChars - halfText));
+            }
+            isTypingActive = visibleTokenCount < totalChars;
+          }
+          break;
+        }
+        default:
+          break;
       }
-      default:
-        break;
     }
 
     // Build visible string for line wrapping
@@ -242,10 +286,6 @@ export class TextRenderer {
     ctx.rotate(rotation);
     ctx.scale(scale * animScale, scale * animScale);
     ctx.globalAlpha = textOpacity * animAlpha;
-
-    if (animBlur > 0 && 'filter' in ctx) {
-      ctx.filter = `blur(${animBlur}px)`;
-    }
 
     // Configure text fill style
     let fillStyle = textColor;
@@ -268,17 +308,15 @@ export class TextRenderer {
     const totalHeight = lines.length * lh;
     let startY = -totalHeight / 2 + lh / 2;
 
-    // Render each line
-    for (let lIdx = 0; lIdx < lines.length; lIdx++) {
-      const line = lines[lIdx];
-      const curY = startY + lIdx * lh;
+    // Render lines based on animation mode
+    if (animMode === 'wave') {
+      for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+        const line = lines[lIdx];
+        const curY = startY + lIdx * lh;
+        let lineX = 0;
+        if (align === 'left') lineX = -maxWidth / 2;
+        else if (align === 'right') lineX = maxWidth / 2;
 
-      let lineX = 0;
-      if (align === 'left') lineX = -maxWidth / 2;
-      else if (align === 'right') lineX = maxWidth / 2;
-
-      // Dynamic wave effect per character
-      if (animMode === 'wave') {
         this.renderWaveLine(
           ctx,
           line,
@@ -298,49 +336,114 @@ export class TextRenderer {
           shadowOffset,
           shadowColor
         );
-      } else {
-        // Standard high-quality render
-        ctx.save();
+      }
+    } else if (customLetterRender === 'cascade') {
+      // Real letter cascade with physics drop
+      let globalCharIdx = 0;
+      for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+        const line = lines[lIdx];
+        const curY = startY + lIdx * lh;
+        let lineX = 0;
+        if (align === 'left') lineX = -maxWidth / 2;
+        else if (align === 'right') lineX = maxWidth / 2;
 
-        // Shadow
+        const lineChars = this.tokenize(line);
+        let totalWidth = 0;
+        const widths = lineChars.map(c => {
+          const w = ctx.measureText(c).width + letterSpacing;
+          totalWidth += w;
+          return w;
+        });
+
+        let curX = lineX;
+        if (align === 'center') curX = lineX - totalWidth / 2;
+        else if (align === 'right') curX = lineX - totalWidth;
+
+        for (let i = 0; i < lineChars.length; i++, globalCharIdx++) {
+          const ch = lineChars[i];
+          const charW = widths[i];
+
+          let charDropY = 0;
+          let charAlpha = 1;
+
+          if (phase === 'in') {
+            const startDelay = (globalCharIdx / Math.max(1, totalChars)) * 0.72;
+            const lp = Math.max(0, Math.min(1, (phaseProgress - startDelay) / 0.28));
+            // Elastic drop bounce
+            const dropEase = 1 - Math.pow(1 - lp, 3);
+            charDropY = (1 - dropEase) * -75;
+            charAlpha = lp;
+          }
+
+          ctx.save();
+          ctx.globalAlpha = textOpacity * animAlpha * charAlpha;
+
+          if (shadowBlur > 0 || shadowOffset > 0) {
+            ctx.shadowColor = shadowColor;
+            ctx.shadowBlur = shadowBlur;
+            ctx.shadowOffsetX = shadowOffset;
+            ctx.shadowOffsetY = shadowOffset;
+          }
+          if (glowBlur > 0) {
+            ctx.shadowColor = glowColor;
+            ctx.shadowBlur = glowBlur;
+          }
+          if (strokeWidth > 0) {
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = strokeWidth * 2;
+            ctx.strokeText(ch, curX + charW / 2, curY + charDropY);
+          }
+
+          ctx.fillStyle = fillStyle;
+          ctx.fillText(ch, curX + charW / 2, curY + charDropY);
+          ctx.restore();
+
+          curX += charW;
+        }
+      }
+    } else {
+      // Standard line-by-line render
+      for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+        const line = lines[lIdx];
+        const curY = startY + lIdx * lh;
+        let lineX = 0;
+        if (align === 'left') lineX = -maxWidth / 2;
+        else if (align === 'right') lineX = maxWidth / 2;
+
+        ctx.save();
         if (shadowBlur > 0 || shadowOffset > 0) {
           ctx.shadowColor = shadowColor;
           ctx.shadowBlur = shadowBlur;
           ctx.shadowOffsetX = shadowOffset;
           ctx.shadowOffsetY = shadowOffset;
         }
-
-        // Glow
         if (glowBlur > 0) {
           ctx.shadowColor = glowColor;
           ctx.shadowBlur = glowBlur;
         }
-
-        // Stroke outline
         if (strokeWidth > 0) {
           ctx.strokeStyle = strokeColor;
           ctx.lineWidth = strokeWidth * 2;
           ctx.strokeText(line, lineX, curY);
         }
 
-        // Fill
         ctx.fillStyle = fillStyle;
         ctx.fillText(line, lineX, curY);
-
         ctx.restore();
       }
     }
 
-    // Emoji-aware pop & radial sparkle burst on trailing emoji
+    // Emoji-aware pop & radial sparkle burst
     if (emojiBurst > 0 && this.hasEmoji(rawText)) {
-      this.renderEmojiBurst(ctx, lineX => 0, startY + (lines.length - 1) * lh, emojiBurst, palette);
+      this.renderEmojiBurst(ctx, 0, startY + (lines.length - 1) * lh, emojiBurst, palette);
     }
 
     // Blinking typing cursor
     if (
       (animMode === 'type' || animMode === 'handwriting' || animMode === 'retype') &&
       config.showCursor !== false &&
-      (isTypingActive || Math.floor(time / 450) % 2 === 0)
+      (isTypingActive || Math.floor(time / 450) % 2 === 0) &&
+      phase !== 'out'
     ) {
       this.renderCursor(ctx, lines, lh, startY, align, maxWidth, palette.primary, fs);
     }
@@ -389,7 +492,7 @@ export class TextRenderer {
     for (let i = 0; i < chars.length; i++) {
       const ch = chars[i];
       const charW = widths[i];
-      const waveY = y + Math.sin(time * 0.005 + (lineIdx * 5 + i) * 0.45) * (fs * 0.18);
+      const waveY = y + Math.sin(time * 0.005 + (lineIdx * 5 + i) * 0.45) * (fs * 0.16);
 
       if (strokeWidth > 0) {
         ctx.strokeStyle = strokeColor;
@@ -431,22 +534,22 @@ export class TextRenderer {
   }
 
   // Emoji Pop radial burst
-  renderEmojiBurst(ctx, getX, y, strength, palette) {
+  renderEmojiBurst(ctx, x, y, strength, palette) {
     ctx.save();
     const count = 8;
     const r = (1 - strength) * 45;
     ctx.strokeStyle = palette.primary;
     ctx.fillStyle = palette.accent;
     ctx.lineWidth = 1.5;
-    ctx.globalAlpha = strength * 0.8;
+    ctx.globalAlpha = strength * 0.85;
 
     for (let i = 0; i < count; i++) {
       const ang = (i * Math.PI * 2) / count;
-      const bx = Math.cos(ang) * r;
+      const bx = x + Math.cos(ang) * r;
       const by = y + Math.sin(ang) * r;
 
       ctx.beginPath();
-      ctx.arc(bx, by, 2 * strength, 0, Math.PI * 2);
+      ctx.arc(bx, by, 2.5 * strength, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();

@@ -5,6 +5,7 @@ A mobile-optimized, high-performance 1:1 animated profile display picture (DP) c
 ## Features
 
 - 14 Visual Scenes: Pre-configured atmospheric canvas environments including Aurora, Moonlight, Rainy Window, Cloudy Dream, Dreamy Bokeh, Soft Sakura, Warm Paper, Glassmorphism, Ocean Deep, City Lights, Emerald Forest, Dark Minimal, Lavender Dream, and Cinematic Flare.
+- Frame Studio: 8 customizable border frame styles (Modern Corners, Classic Rectangle, Double Border, Neon Glow, Vintage Stationery, Dotted Tech, Gradient Aura, or None/Hidden) with custom color, thickness, and padding controls.
 - Multi-Layer Particle Engine: Object-pooled 60 FPS physics renderer supporting simultaneous particle layers such as Sparkles, Stars, Twinkles, Rain streaks, Drizzle, Sakura petals, Snowflakes, Floating hearts, Butterflies, Clouds, Bubbles, Ribbons, Orbit rings, Shooting stars, and Hand doodles.
 - Deep Typography Controls: Text styling with Solid, Linear Gradient, Dynamic Rainbow Shift, and Luminous Glow options. Includes Font Family selection, Weight, Italic toggle, Letter Spacing, Line Height, Text Opacity, Stroke Outline with custom width and color, Drop Shadow, and Glow Blur.
 - Layout and Transformations: Real-time controls for Horizontal X position, Vertical Y position, Rotation (-30 deg to +30 deg), Scale (50% to 150%), and Max Width wrapping.

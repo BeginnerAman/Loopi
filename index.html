@@ -105,9 +105,35 @@
           </div>
           <div class="accordionBody">
             <div class="scenesGrid" id="scenesGrid"></div>
-            <div style="margin-top: 10px;">
-              <label class="checkboxLabel">
-                <input type="checkbox" id="showFrame" checked> Show Decorative Border Frame
+
+            <!-- Frame Studio Controls -->
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);">
+              <div class="inputLabel" style="margin-bottom: 8px;">🖼️ Frame Studio & Borders</div>
+
+              <div class="grid2 controlRow">
+                <div>
+                  <label class="inputLabel" for="frameStyleSelect">Frame Style</label>
+                  <select id="frameStyleSelect" class="formSelect"></select>
+                </div>
+                <div class="colorPickerRow" style="margin-top: 19px;">
+                  <span>Frame Color</span>
+                  <input type="color" id="frameColorPicker" class="colorSwatchInput" value="#aa91ff">
+                </div>
+              </div>
+
+              <div class="grid2 controlRow">
+                <div>
+                  <label class="inputLabel">Thickness: <span id="frameWidthOut">2px</span></label>
+                  <input type="range" id="frameWidth" class="rangeInput" min="1" max="10" value="2">
+                </div>
+                <div>
+                  <label class="inputLabel">Padding Inset: <span id="framePaddingOut">26px</span></label>
+                  <input type="range" id="framePadding" class="rangeInput" min="14" max="50" value="26">
+                </div>
+              </div>
+
+              <label class="checkboxLabel" style="margin-top: 4px;">
+                <input type="checkbox" id="showFrame" checked> Enable Frame / Border
               </label>
             </div>
           </div>
