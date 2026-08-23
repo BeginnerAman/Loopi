@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08090f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>DP Motion Studio - 1:1 Animated DP Creator</title>
+  
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app">
+    <!-- Top Navigation Header -->
+    <header class="topNav">
+      <div class="brand">
+        <div class="brandLogo">✦</div>
+        <div class="brandInfo">
+          <h1>DP Motion Studio</h1>
+          <p>Animated Profile Creator · 1:1 · Permanent Zero Watermark</p>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <button class="topActionBtn" id="surpriseBtn" title="Harmonious Random Design">
+          <span>🎲</span> Surprise Me
+        </button>
+        <button class="topActionBtn primary" id="autoStyleBtn" title="Intelligent Theme Matcher">
+          <span>🧠</span> Auto Style
+        </button>
+        <button class="topActionBtn" id="replayBtn" title="Replay Animation">
+          <span>↻</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Studio Main Grid -->
+    <main class="studioGrid">
+      
+      <!-- Left Column: Canvas Preview & Live Timeline Stage -->
+      <section class="previewStage">
+        <div class="previewHeader">
+          <span class="previewTitle">Live DP Preview</span>
+          <div class="previewModes">
+            <button class="previewModeBtn active" data-mode="canvas">Canvas</button>
+            <button class="previewModeBtn" data-mode="telegram">Telegram DP</button>
+            <button class="previewModeBtn" data-mode="fullscreen">Full Screen</button>
+          </div>
+        </div>
+
+        <div class="previewContainer" id="previewContainer">
+          <canvas id="previewCanvas" width="720" height="720"></canvas>
+          <div class="telegramCircleMask" id="telegramCircleMask"></div>
+        </div>
+
+        <!-- Live Interactive Timeline Scrubber -->
+        <div class="timelineComponent">
+          <div class="timelineControls">
+            <button class="timelinePlayBtn" id="playPauseBtn" title="Play/Pause">⏸</button>
+            <span class="timelineTime" id="timelineTime">0.0s / 3.5s</span>
+          </div>
+          <div class="timelineTrack" id="timelineTrack">
+            <div class="timelineProgress" id="timelineProgress"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Accordion-Based Customization Controls -->
+      <section class="controlsColumn">
+
+        <!-- 1. Message & Presets Accordion (Open by default) -->
+        <div class="accordionItem open">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>💬</span> Message & Presets
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="controlRow">
+              <label class="inputLabel" for="textInput">Your Message</label>
+              <textarea id="textInput" class="textInputArea" placeholder="Type your message here...">Hello Ji...😊</textarea>
+            </div>
+            <div class="controlRow">
+              <label class="inputLabel">Quick Presets (1-Tap Change)</label>
+              <div id="messagePresetsList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Visual Scene & Atmosphere Accordion -->
+        <div class="accordionItem">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>🌌</span> Visual Scene & Atmosphere (14 Presets)
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="scenesGrid" id="scenesGrid"></div>
+            <div style="margin-top: 10px;">
+              <label class="checkboxLabel">
+                <input type="checkbox" id="showFrame" checked> Show Decorative Border Frame
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Color Studio & Palettes Accordion -->
+        <div class="accordionItem">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>🎨</span> Color Studio & Palettes
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="controlRow">
+              <label class="inputLabel">Designer Palettes</label>
+              <div class="palettesGrid" id="palettesGrid"></div>
+            </div>
+
+            <div class="controlRow">
+              <label class="inputLabel" for="colorMode">Text Color Style</label>
+              <select id="colorMode" class="formSelect">
+                <option value="solid">Solid Palette Color</option>
+                <option value="gradient">Linear Gradient</option>
+                <option value="rainbow">Dynamic Rainbow Shift</option>
+                <option value="glow">Luminous White Glow</option>
+              </select>
+            </div>
+
+            <div id="gradientControls" class="grid2 controlRow" style="display: none;">
+              <div class="colorPickerRow">
+                <span>Start Color</span>
+                <input type="color" id="gradStartPicker" class="colorSwatchInput" value="#aa91ff">
+              </div>
+              <div class="colorPickerRow">
+                <span>End Color</span>
+                <input type="color" id="gradEndPicker" class="colorSwatchInput" value="#d8cbff">
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="colorPickerRow">
+                <span>Custom Text</span>
+                <input type="color" id="textColorPicker" class="colorSwatchInput" value="#faf8ff">
+              </div>
+              <div class="colorPickerRow">
+                <span>Custom Glow</span>
+                <input type="color" id="glowColorPicker" class="colorSwatchInput" value="#aa91ff">
+              </div>
+            </div>
+
+            <div class="colorPickerRow">
+              <span>Doodle Particle Color</span>
+              <input type="color" id="doodleColorPicker" class="colorSwatchInput" value="#aa91ff">
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Typography & Styling Accordion -->
+        <div class="accordionItem">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>✏️</span> Typography & Text Styling
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel" for="fontSelect">Font Family</label>
+                <select id="fontSelect" class="formSelect"></select>
+              </div>
+              <div>
+                <label class="inputLabel" for="fontWeight">Font Weight</label>
+                <select id="fontWeight" class="formSelect">
+                  <option value="400">Regular (400)</option>
+                  <option value="600" selected>SemiBold (600)</option>
+                  <option value="700">Bold (700)</option>
+                  <option value="900">Black (900)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel" for="textAlign">Alignment</label>
+                <select id="textAlign" class="formSelect">
+                  <option value="center" selected>Center</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+              <div style="display:flex; align-items: flex-end; padding-bottom: 6px;">
+                <label class="checkboxLabel" style="margin: 0;">
+                  <input type="checkbox" id="fontItalic"> Italic
+                </label>
+              </div>
+            </div>
+
+            <div class="controlRow">
+              <label class="inputLabel">Font Size: <span id="fontSizeOut">52</span>px</label>
+              <div class="rangeGroup">
+                <input type="range" id="fontSize" class="rangeInput" min="24" max="96" value="52">
+              </div>
+            </div>
+
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel">Letter Spacing: <span id="letterSpacingOut">0</span>px</label>
+                <input type="range" id="letterSpacing" class="rangeInput" min="-3" max="15" value="0">
+              </div>
+              <div>
+                <label class="inputLabel">Line Spacing: <span id="lineHeightOut">1.35</span></label>
+                <input type="range" id="lineHeight" class="rangeInput" min="1.0" max="2.2" step="0.05" value="1.35">
+              </div>
+            </div>
+
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel">Glow Blur: <span id="glowBlurOut">26</span></label>
+                <input type="range" id="glowBlur" class="rangeInput" min="0" max="60" value="26">
+              </div>
+              <div>
+                <label class="inputLabel">Opacity: <span id="textOpacityOut">100%</span></label>
+                <input type="range" id="textOpacity" class="rangeInput" min="20" max="100" value="100">
+              </div>
+            </div>
+
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel">Stroke Width: <span id="strokeWidthOut">0</span>px</label>
+                <input type="range" id="strokeWidth" class="rangeInput" min="0" max="10" value="0">
+              </div>
+              <div class="colorPickerRow">
+                <span>Stroke Color</span>
+                <input type="color" id="strokeColorPicker" class="colorSwatchInput" value="#000000">
+              </div>
+            </div>
+
+            <div class="controlRow">
+              <label class="inputLabel">Drop Shadow Blur: <span id="shadowBlurOut">0</span></label>
+              <input type="range" id="shadowBlur" class="rangeInput" min="0" max="40" value="0">
+            </div>
+
+            <!-- Position, Rotation & Scale Sub-section -->
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);">
+              <div class="grid2 controlRow">
+                <div>
+                  <label class="inputLabel">Horizontal X: <span id="posXOut">50%</span></label>
+                  <input type="range" id="posX" class="rangeInput" min="15" max="85" value="50">
+                </div>
+                <div>
+                  <label class="inputLabel">Vertical Y: <span id="posYOut">50%</span></label>
+                  <input type="range" id="posY" class="rangeInput" min="15" max="85" value="50">
+                </div>
+              </div>
+
+              <div class="grid3 controlRow">
+                <div>
+                  <label class="inputLabel">Rotation: <span id="rotationOut">0°</span></label>
+                  <input type="range" id="rotation" class="rangeInput" min="-30" max="30" value="0">
+                </div>
+                <div>
+                  <label class="inputLabel">Scale: <span id="scaleOut">100%</span></label>
+                  <input type="range" id="scale" class="rangeInput" min="50" max="150" value="100">
+                </div>
+                <div>
+                  <label class="inputLabel">Max Width: <span id="maxWidthOut">82%</span></label>
+                  <input type="range" id="maxWidth" class="rangeInput" min="40" max="95" value="82">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Doodles & Multi-Layer Particles Accordion -->
+        <div class="accordionItem">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>✨</span> Doodles & Multi-Particles (Combine 2–3)
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="controlRow">
+              <label class="inputLabel">Select Active Doodles (Multi-Select Enabled)</label>
+              <div class="doodlesGrid" id="doodlesGrid"></div>
+            </div>
+
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel">Amount: <span id="doodleAmountOut">14</span></label>
+                <input type="range" id="doodleAmount" class="rangeInput" min="2" max="40" value="14">
+              </div>
+              <div>
+                <label class="inputLabel">Size: <span id="doodleSizeOut">100%</span></label>
+                <input type="range" id="doodleSize" class="rangeInput" min="40" max="220" value="100">
+              </div>
+            </div>
+
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel">Speed: <span id="doodleSpeedOut">100%</span></label>
+                <input type="range" id="doodleSpeed" class="rangeInput" min="20" max="250" value="100">
+              </div>
+              <div>
+                <label class="inputLabel">Opacity: <span id="doodleOpacityOut">90%</span></label>
+                <input type="range" id="doodleOpacity" class="rangeInput" min="10" max="100" value="90">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Animation & Motion Styles Accordion -->
+        <div class="accordionItem">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>🎬</span> Animation & Motion Styles (14 Styles)
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="animGrid" id="animGrid"></div>
+
+            <div class="controlRow" style="margin-top: 12px;">
+              <label class="inputLabel">Animation Speed: <span id="animSpeedOut">70</span>ms</label>
+              <input type="range" id="animSpeed" class="rangeInput" min="20" max="180" value="70">
+            </div>
+
+            <div class="grid2">
+              <label class="checkboxLabel">
+                <input type="checkbox" id="showCursor" checked> Blinking Typing Cursor
+              </label>
+              <label class="checkboxLabel">
+                <input type="checkbox" id="loopToggle" checked> Seamless Loop
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Export Studio Accordion -->
+        <div class="accordionItem">
+          <div class="accordionHeader">
+            <div class="accordionHeaderIcon">
+              <span>🚀</span> Export Studio (Permanent No Watermark)
+            </div>
+            <span class="accordionArrow">▼</span>
+          </div>
+          <div class="accordionBody">
+            <div class="grid2 controlRow">
+              <div>
+                <label class="inputLabel" for="exportResolution">Resolution (1:1)</label>
+                <select id="exportResolution" class="formSelect">
+                  <option value="360">360 × 360 (Fast / Small)</option>
+                  <option value="512" selected>512 × 512 (Telegram DP Standard)</option>
+                  <option value="720">720 × 720 (HD Square)</option>
+                  <option value="1080">1080 × 1080 (Ultra HD)</option>
+                </select>
+              </div>
+              <div>
+                <label class="inputLabel" for="exportFps">Framerate (FPS)</label>
+                <select id="exportFps" class="formSelect">
+                  <option value="15">15 FPS</option>
+                  <option value="24" selected>24 FPS (Cinematic)</option>
+                  <option value="30">30 FPS (Smooth)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="exportButtons">
+              <button class="btnExport primary" id="exportGifBtn">
+                <span>⬇️</span> Download GIF
+              </button>
+              <button class="btnExport" id="exportMp4Btn">
+                <span>🎥</span> Download MP4
+              </button>
+              <button class="btnExport" id="exportPngBtn">
+                <span>📸</span> Save PNG
+              </button>
+            </div>
+
+            <p class="exportHint">
+              ✨ 100% Watermark-Free forever. Exports render locally inside your browser with optimized compression.
+            </p>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Export Progress Modal Overlay -->
+  <div class="exportModal" id="exportModal">
+    <div class="exportModalCard">
+      <h3 id="exportModalTitle">Exporting DP Motion</h3>
+      <p id="exportStatus">Rendering frames and quantizing...</p>
+      <div class="exportProgressBar">
+        <div class="exportProgressFill" id="exportProgressFill"></div>
+      </div>
+      <span style="font-size: 11px; color: var(--text-muted);" id="exportProgressText">0%</span>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div class="toast" id="toast">✨ Action complete!</div>
+
+  <!-- App Entry Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
