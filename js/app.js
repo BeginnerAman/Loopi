@@ -1004,22 +1004,39 @@ class DPStudioApp {
       }
     };
 
-    // Interactive Touch & Drag Sparkle Emitter
-    const handleTouchPointer = e => {
-      const rect = this.canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      if (clientX === undefined || clientY === undefined) return;
-      const x = ((clientX - rect.left) / rect.width) * this.W;
-      const y = ((clientY - rect.top) / rect.height) * this.H;
-      const palette = this.getCurrentPalette();
-      this.particles.emitTouch(x, y, palette.primary, 3);
+    // Interactive Touch & Drag Sparkle Emitter with rAF coalescing (Buttery smooth 60/120fps)
+    let pendingTouch = null;
+    let rAFScheduled = false;
+
+    const processTouch = () => {
+      rAFScheduled = false;
+      if (pendingTouch) {
+        const { clientX, clientY } = pendingTouch;
+        pendingTouch = null;
+        const rect = this.canvas.getBoundingClientRect();
+        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+          const x = ((clientX - rect.left) / rect.width) * this.W;
+          const y = ((clientY - rect.top) / rect.height) * this.H;
+          const palette = this.getCurrentPalette();
+          this.particles.emitTouch(x, y, palette.primary, 3);
+        }
+      }
     };
 
-    this.canvas.addEventListener('pointerdown', handleTouchPointer);
+    const handleTouchPointer = e => {
+      const touch = e.touches ? e.touches[0] : e;
+      if (!touch) return;
+      pendingTouch = { clientX: touch.clientX, clientY: touch.clientY };
+      if (!rAFScheduled) {
+        rAFScheduled = true;
+        requestAnimationFrame(processTouch);
+      }
+    };
+
+    this.canvas.addEventListener('pointerdown', handleTouchPointer, { passive: true });
     this.canvas.addEventListener('pointermove', e => {
       if (e.buttons > 0) handleTouchPointer(e);
-    });
+    }, { passive: true });
     this.canvas.addEventListener('touchmove', handleTouchPointer, { passive: true });
 
     // Text Input

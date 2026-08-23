@@ -1,6 +1,7 @@
 /**
  * DP Creator Studio V4 - High Performance Particle & Doodle Physics Engine
  * Multi-layer rendering, object-pooled, 60fps mobile optimized, Interactive Touch Emitter
+ * 3D Planetary Orbit & Celestial Sacred Circles
  */
 
 export class ParticleEngine {
@@ -8,7 +9,7 @@ export class ParticleEngine {
     this.pools = new Map();
     this.maxPoolSize = 100;
 
-    // Interactive Touch Sparkles Pool
+    // Interactive Touch Sparkles Pool (Object-Pooled for 0ms GC overhead)
     this.touchSparkles = [];
     for (let i = 0; i < 45; i++) {
       this.touchSparkles.push({
@@ -71,7 +72,8 @@ export class ParticleEngine {
 
   draw(ctx, W, H, time, activeDoodles, config, palette) {
     if (activeDoodles && activeDoodles.length > 0) {
-      for (const doodleId of activeDoodles) {
+      for (let i = 0; i < activeDoodles.length; i++) {
+        const doodleId = activeDoodles[i];
         if (doodleId === 'none') continue;
         this.renderDoodleLayer(ctx, W, H, time, doodleId, config, palette);
       }
@@ -94,7 +96,7 @@ export class ParticleEngine {
 
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.04; // Gentle gravity
+        p.vy += 0.04;
         p.vx *= 0.98;
 
         const progress = p.life / p.maxLife;
@@ -140,6 +142,12 @@ export class ParticleEngine {
       case 'twinkle':
         this.renderTwinkles(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
         break;
+      case 'circles':
+        this.renderCelestialCircles(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
+        break;
+      case 'orbit':
+        this.renderOrbit(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
+        break;
       case 'rain':
         this.renderRain(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
         break;
@@ -166,9 +174,6 @@ export class ParticleEngine {
         break;
       case 'ribbons':
         this.renderRibbons(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
-        break;
-      case 'orbit':
-        this.renderOrbit(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
         break;
       case 'shooting_star':
         this.renderShootingStars(ctx, W, H, time, pool, amount, sizeScale, speed, opacity, color);
@@ -261,12 +266,170 @@ export class ParticleEngine {
     }
   }
 
-  // 4. Rain Streaks
+  // 4. ✨ Celestial Sacred Circles & Cosmic Halos (NEW)
+  renderCelestialCircles(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
+    const cx = W / 2;
+    const cy = H / 2;
+    const baseR = 140 * sizeScale;
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+
+    // 1. Inner glowing subtle halo
+    ctx.globalAlpha = 0.25 * opacity;
+    ctx.lineWidth = 1.2 * sizeScale;
+    ctx.beginPath();
+    ctx.arc(cx, cy, baseR * 0.75, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 2. Middle Sacred Circle with tick marks
+    ctx.globalAlpha = 0.35 * opacity;
+    ctx.lineWidth = 1.6 * sizeScale;
+    ctx.beginPath();
+    ctx.arc(cx, cy, baseR * 1.35, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Tick marks rotating
+    const tickRot = time * 0.0002 * speed;
+    ctx.lineWidth = 1.5 * sizeScale;
+    ctx.globalAlpha = 0.45 * opacity;
+    for (let k = 0; k < 12; k++) {
+      const ang = tickRot + (k * Math.PI * 2) / 12;
+      const r1 = baseR * 1.35 - 5 * sizeScale;
+      const r2 = baseR * 1.35 + 5 * sizeScale;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(ang) * r1, cy + Math.sin(ang) * r1);
+      ctx.lineTo(cx + Math.cos(ang) * r2, cy + Math.sin(ang) * r2);
+      ctx.stroke();
+    }
+
+    // 3. Outer Sacred Geometry Arc
+    ctx.globalAlpha = 0.2 * opacity;
+    ctx.lineWidth = 1.2 * sizeScale;
+    ctx.setLineDash([4, 12]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, baseR * 2.0, -time * 0.00015 * speed, -time * 0.00015 * speed + Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 4. Orbiting Moon Orbs around circles
+    const orbCount = Math.max(3, Math.min(6, count));
+    for (let i = 0; i < orbCount; i++) {
+      const ang = time * 0.0005 * speed * (i % 2 === 0 ? 1 : -0.8) + (i * Math.PI * 2) / orbCount;
+      const ringRadius = i % 2 === 0 ? baseR * 1.35 : baseR * 2.0;
+      const ox = cx + Math.cos(ang) * ringRadius;
+      const oy = cy + Math.sin(ang) * ringRadius;
+
+      ctx.globalAlpha = 0.85 * opacity;
+      ctx.beginPath();
+      ctx.arc(ox, oy, 4 * sizeScale, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Soft glow ring
+      ctx.globalAlpha = 0.25 * opacity;
+      ctx.beginPath();
+      ctx.arc(ox, oy, 9 * sizeScale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // 5. 🪐 Upgraded 3D Planetary Orbit System (Rich Multi-Ring Perspective)
+  renderOrbit(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
+    const cx = W / 2;
+    const cy = H / 2;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 3D Perspective Tilt Angle
+    const tilt1 = 0.48; // ~28 deg
+    const tilt2 = -0.32; // ~-18 deg
+
+    // 1. Primary Orbit Ellipse (Outer Ring)
+    ctx.save();
+    ctx.rotate(tilt1);
+    const rx1 = 280 * sizeScale;
+    const ry1 = 140 * sizeScale;
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1.6 * sizeScale;
+    ctx.globalAlpha = 0.28 * opacity;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx1, ry1, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Orbiting Satellites on Ring 1
+    const satCount1 = Math.max(2, Math.round(count * 0.5));
+    for (let i = 0; i < satCount1; i++) {
+      const ang = time * 0.0006 * speed + (i * Math.PI * 2) / satCount1;
+      const px = rx1 * Math.cos(ang);
+      const py = ry1 * Math.sin(ang);
+      const depthScale = 0.75 + 0.35 * Math.sin(ang); // 3D depth scale
+
+      // Glowing Tracer Arc Trail
+      ctx.globalAlpha = 0.2 * opacity;
+      ctx.lineWidth = 3 * sizeScale;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx1, ry1, 0, ang - 0.35, ang);
+      ctx.stroke();
+
+      // Satellite Core
+      ctx.globalAlpha = 0.9 * opacity;
+      ctx.beginPath();
+      ctx.arc(px, py, 4.5 * sizeScale * depthScale, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Luminous Satellite Corona
+      ctx.globalAlpha = 0.3 * opacity;
+      ctx.beginPath();
+      ctx.arc(px, py, 11 * sizeScale * depthScale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 2. Counter-Rotating Inner Planetary Ring (Tilted opposite)
+    ctx.save();
+    ctx.rotate(tilt2);
+    const rx2 = 210 * sizeScale;
+    const ry2 = 100 * sizeScale;
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1.2 * sizeScale;
+    ctx.globalAlpha = 0.22 * opacity;
+    ctx.setLineDash([8, 14]);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx2, ry2, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Orbiting Satellites on Ring 2 (counter-clockwise)
+    const satCount2 = Math.max(2, Math.round(count * 0.4));
+    for (let i = 0; i < satCount2; i++) {
+      const ang = -time * 0.0008 * speed + (i * Math.PI * 2) / satCount2;
+      const px = rx2 * Math.cos(ang);
+      const py = ry2 * Math.sin(ang);
+      const depthScale = 0.7 + 0.35 * Math.sin(ang);
+
+      ctx.globalAlpha = 0.85 * opacity;
+      ctx.beginPath();
+      ctx.arc(px, py, 3.5 * sizeScale * depthScale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // 6. Rain Streaks (Consolidated Batch Drawing for Mobile 60fps)
   renderRain(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 1.8 * sizeScale;
     ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.65 * opacity;
 
+    ctx.beginPath();
     for (let i = 0; i < count * 2; i++) {
       const idx = i % pool.length;
       const p = pool[idx];
@@ -276,18 +439,17 @@ export class ParticleEngine {
       const py = -60 + prog * (H + 120);
       const len = (14 + (i % 5) * 6) * sizeScale;
 
-      const edgeAlpha = Math.sin(Math.min(1, Math.max(0, prog / 1.1)) * Math.PI);
-      ctx.globalAlpha = (0.2 + 0.65 * edgeAlpha) * opacity;
-      ctx.beginPath();
       ctx.moveTo(px, py);
       ctx.lineTo(px - 4 * sizeScale, py + len);
-      ctx.stroke();
     }
+    ctx.stroke();
   }
 
-  // 5. Gentle Drizzle
+  // 7. Gentle Drizzle (Consolidated Batching)
   renderDrizzle(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
+    ctx.globalAlpha = 0.5 * opacity;
+    ctx.beginPath();
     for (let i = 0; i < count * 1.5; i++) {
       const idx = i % pool.length;
       const p = pool[idx];
@@ -297,14 +459,13 @@ export class ParticleEngine {
       const py = -40 + prog * (H + 80);
       const r = (2 + (i % 3)) * sizeScale;
 
-      ctx.globalAlpha = (0.2 + 0.5 * Math.sin(prog * Math.PI)) * opacity;
-      ctx.beginPath();
+      ctx.moveTo(px + r, py);
       ctx.arc(px, py, r, 0, Math.PI * 2);
-      ctx.fill();
     }
+    ctx.fill();
   }
 
-  // 6. Sakura Petals (Realistic Flutter & 3D Tilt)
+  // 8. Sakura Petals (Realistic Flutter & 3D Tilt)
   renderPetals(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
     for (let i = 0; i < count; i++) {
@@ -334,9 +495,11 @@ export class ParticleEngine {
     }
   }
 
-  // 7. Snow (Drifting Fluffy Snowflakes)
+  // 9. Snow (Drifting Fluffy Snowflakes - Consolidated Batching)
   renderSnow(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
+    ctx.globalAlpha = 0.65 * opacity;
+    ctx.beginPath();
     for (let i = 0; i < count * 1.6; i++) {
       const idx = i % pool.length;
       const p = pool[idx];
@@ -347,14 +510,13 @@ export class ParticleEngine {
       const py = -40 + prog * (H + 80);
       const r = (2.2 + (i % 4) * 1.5) * sizeScale * p.size;
 
-      ctx.globalAlpha = (0.3 + 0.55 * Math.sin(Math.min(1, prog) * Math.PI)) * opacity;
-      ctx.beginPath();
+      ctx.moveTo(px + r, py);
       ctx.arc(px, py, r, 0, Math.PI * 2);
-      ctx.fill();
     }
+    ctx.fill();
   }
 
-  // 8. Floating Romantic Hearts
+  // 10. Floating Romantic Hearts
   renderHearts(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
     for (let i = 0; i < count; i++) {
@@ -382,7 +544,7 @@ export class ParticleEngine {
     }
   }
 
-  // 9. Butterflies (Flapping Silhouette)
+  // 11. Butterflies (Flapping Silhouette)
   renderButterflies(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
@@ -414,7 +576,7 @@ export class ParticleEngine {
     }
   }
 
-  // 10. Floating Clouds
+  // 12. Floating Clouds
   renderClouds(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
     for (let i = 0; i < count; i++) {
@@ -440,7 +602,7 @@ export class ParticleEngine {
     }
   }
 
-  // 11. Translucent Rising Bubbles
+  // 13. Translucent Rising Bubbles
   renderBubbles(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
@@ -469,7 +631,7 @@ export class ParticleEngine {
     }
   }
 
-  // 12. Ribbons / Confetti
+  // 14. Ribbons / Confetti
   renderRibbons(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.fillStyle = color;
     for (let i = 0; i < count; i++) {
@@ -493,44 +655,7 @@ export class ParticleEngine {
     }
   }
 
-  // 13. Orbit Rings with Satellites
-  renderOrbit(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
-    const cx = W / 2;
-    const cy = H / 2;
-    const rx = 270 * sizeScale;
-    const ry = 190 * sizeScale;
-
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = 1.8 * sizeScale;
-    ctx.globalAlpha = 0.35 * opacity;
-    ctx.setLineDash([6, 16]);
-
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, rx, ry, time * 0.00008 * speed, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    const satCount = Math.max(2, Math.round(count * 0.5));
-    for (let i = 0; i < satCount; i++) {
-      const ang = time * 0.0006 * speed + (i * Math.PI * 2) / satCount;
-      const px = cx + rx * Math.cos(ang);
-      const py = cy + ry * Math.sin(ang);
-      const r = (5 + 2 * Math.sin(time * 0.004 * speed + i)) * sizeScale;
-
-      ctx.globalAlpha = 0.85 * opacity;
-      ctx.beginPath();
-      ctx.arc(px, py, r, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.globalAlpha = 0.3 * opacity;
-      ctx.beginPath();
-      ctx.arc(px, py, r * 2.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  // 14. Shooting Stars / Meteors
+  // 15. Shooting Stars / Meteors
   renderShootingStars(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     for (let i = 0; i < count; i++) {
       const cycle = 3500 / speed;
@@ -565,7 +690,7 @@ export class ParticleEngine {
     }
   }
 
-  // 15. Hand-drawn Doodles
+  // 16. Hand-drawn Doodles
   renderHandDoodles(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 2.2 * sizeScale;

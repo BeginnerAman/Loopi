@@ -374,6 +374,8 @@ export const DOODLE_LIBRARY = [
   { id: 'spark', name: 'Sparkles', icon: 'sparkle', defaultAmount: 14 },
   { id: 'stars', name: 'Stars', icon: 'star', defaultAmount: 10 },
   { id: 'twinkle', name: 'Twinkles', icon: 'sparkles', defaultAmount: 12 },
+  { id: 'circles', name: 'Celestial Circles', icon: 'circle-dot', defaultAmount: 4 },
+  { id: 'orbit', name: 'Planetary Orbit 3D', icon: 'orbit', defaultAmount: 6 },
   { id: 'rain', name: 'Rain Streaks', icon: 'cloud-rain', defaultAmount: 24 },
   { id: 'drizzle', name: 'Gentle Drizzle', icon: 'droplets', defaultAmount: 16 },
   { id: 'petals', name: 'Sakura Petals', icon: 'flower-2', defaultAmount: 12 },
@@ -383,25 +385,24 @@ export const DOODLE_LIBRARY = [
   { id: 'clouds', name: 'Floating Clouds', icon: 'cloud', defaultAmount: 4 },
   { id: 'bubbles', name: 'Bubbles', icon: 'circle-dot', defaultAmount: 10 },
   { id: 'ribbons', name: 'Ribbons / Confetti', icon: 'party-popper', defaultAmount: 14 },
-  { id: 'orbit', name: 'Orbit Rings', icon: 'orbit', defaultAmount: 6 },
   { id: 'shooting_star', name: 'Shooting Stars', icon: 'flame', defaultAmount: 3 },
   { id: 'doodles', name: 'Hand Doodles', icon: 'pen-tool', defaultAmount: 8 }
 ];
 
 export const ANIMATIONS = [
-  { id: 'type', name: 'Typewriter', icon: 'keyboard', desc: 'Classic char-by-char with glowing cursor' },
+  { id: 'type', name: 'Typewriter', icon: 'keyboard', desc: 'Natural char-by-char with glowing cursor & emoji hop' },
   { id: 'fade', name: 'Soft Fade', icon: 'sun', desc: 'Silky smooth opacity reveal' },
-  { id: 'pop', name: 'Pop Bounce', icon: 'maximize-2', desc: 'Elastic bouncy entrance' },
-  { id: 'slide_up', name: 'Slide Up', icon: 'arrow-up', desc: 'Smooth upward glide' },
-  { id: 'slide_down', name: 'Slide Down', icon: 'arrow-down', desc: 'Gentle downward drop' },
+  { id: 'pop', name: 'Pop Bounce', icon: 'maximize-2', desc: 'Elastic spring physics bounce' },
+  { id: 'slide_up', name: 'Slide Up', icon: 'arrow-up', desc: 'Smooth upward glide with overshoot settling' },
+  { id: 'slide_down', name: 'Slide Down', icon: 'arrow-down', desc: 'Gentle downward drop with overshoot settling' },
   { id: 'slide_left', name: 'Slide Left', icon: 'arrow-left', desc: 'Lateral entrance from right' },
   { id: 'slide_right', name: 'Slide Right', icon: 'arrow-right', desc: 'Lateral entrance from left' },
-  { id: 'zoom_in', name: 'Zoom In', icon: 'zoom-in', desc: 'Dramatic depth scale-up' },
+  { id: 'zoom_in', name: 'Zoom In', icon: 'zoom-in', desc: 'Dramatic depth lens scale-up & breathing' },
   { id: 'wave', name: 'Wave Motion', icon: 'activity', desc: 'Dynamic sine wave bouncing letters' },
-  { id: 'cascade', name: 'Letter Cascade', icon: 'list-ordered', desc: 'Cascading staggered character drops' },
-  { id: 'cinematic', name: 'Cinematic Reveal', icon: 'film', desc: 'Soft blur to sharp cinematic lens focus' },
-  { id: 'handwriting', name: 'Handwriting', icon: 'pen-tool', desc: 'Stroke by stroke handwriting flow' },
-  { id: 'neon', name: 'Neon Flicker', icon: 'zap', desc: 'Electric pulsing tube ignition' },
+  { id: 'cascade', name: 'Letter Cascade', icon: 'list-ordered', desc: 'Cascading staggered character drops with spring bounce' },
+  { id: 'cinematic', name: 'Cinematic Reveal', icon: 'film', desc: 'Optical focus pull & letter tracking expansion' },
+  { id: 'handwriting', name: 'Handwriting', icon: 'pen-tool', desc: 'Stroke by stroke flow with glowing pen tip spark' },
+  { id: 'neon', name: 'Neon Flicker', icon: 'zap', desc: 'Electric pulsing tube ignition & hum' },
   { id: 'retype', name: 'Type & Retype', icon: 'repeat', desc: 'Types, pauses, deletes, and re-types' }
 ];
 
