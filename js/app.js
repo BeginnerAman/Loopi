@@ -476,59 +476,345 @@ class DPStudioApp {
     this.showToast('New Design Created!');
   }
 
-  // 🧠 "Auto Style": Intelligent Aesthetic Matcher
+  // 🧠 "Auto Style": Intelligent Aesthetic Matcher & Multi-Variation Engine
   autoStyle() {
-    const text = this.state.text.toLowerCase();
+    if (!this.autoStyleCounter) this.autoStyleCounter = 0;
+    this.autoStyleCounter++;
 
-    if (text.includes('hello') || text.includes('😊') || text.includes('cute')) {
-      this.state.sceneId = 'purple';
-      this.state.paletteIndex = 0;
-      this.state.font = 'Outfit';
-      this.state.animMode = 'type';
-      this.state.frameStyle = 'neon';
-      this.state.activeDoodles = ['spark', 'twinkle'];
-      this.state.glowBlur = 28;
-    } else if (text.includes('❤️') || text.includes('love') || text.includes('sweet')) {
-      this.state.sceneId = 'sakura';
-      this.state.paletteIndex = 2;
-      this.state.font = 'Playfair Display';
-      this.state.animMode = 'pop';
-      this.state.frameStyle = 'vintage';
-      this.state.activeDoodles = ['hearts', 'petals'];
-      this.state.glowBlur = 30;
-    } else if (text.includes('morning') || text.includes('☀️') || text.includes('sun')) {
-      this.state.sceneId = 'nature';
-      this.state.paletteIndex = 7;
-      this.state.font = 'Outfit';
-      this.state.animMode = 'slide_up';
-      this.state.frameStyle = 'double';
-      this.state.activeDoodles = ['twinkle', 'spark'];
-    } else if (text.includes('night') || text.includes('🌙') || text.includes('dream')) {
-      this.state.sceneId = 'moonlight';
-      this.state.paletteIndex = 1;
-      this.state.font = 'Playfair Display';
-      this.state.animMode = 'cinematic';
-      this.state.frameStyle = 'corners';
-      this.state.activeDoodles = ['stars', 'shooting_star'];
-    } else if (text.includes('coffee') || text.includes('☕') || text.includes('note')) {
-      this.state.sceneId = 'paper';
-      this.state.paletteIndex = 5;
-      this.state.font = 'Caveat';
-      this.state.animMode = 'handwriting';
-      this.state.frameStyle = 'vintage';
-      this.state.activeDoodles = ['doodles'];
+    const text = (this.state.text || '').toLowerCase();
+    const len = this.state.text.length;
+
+    // Detect Mood Category
+    let mood = 'cute_playful';
+
+    if (/❤️|💖|💕|💌|🥰|😘|🌹|💐|love|pyaar|dil|heart|ishq|miss|sweet|jaan|forever/.test(text)) {
+      mood = 'romantic_love';
+    } else if (/🌙|⭐|🌌|✨|😴|🌃|night|raat|sleep|dream|moon|stars|midnight|khwab|so jao/.test(text)) {
+      mood = 'dreamy_night';
+    } else if (/☀️|🌅|🌸|🌿|🍀|🌻|morning|subah|sun|sunrise|fresh|nature|green|rose|namaste|pranam/.test(text)) {
+      mood = 'fresh_morning';
+    } else if (/🌧️|💧|⛈️|🌊|☂️|rain|barish|drizzle|weather|clouds|mausam|water|storm|blue/.test(text)) {
+      mood = 'moody_rain';
+    } else if (/☕|📜|📖|✍️|coffee|chai|tea|note|letter|book|words|shayari|kavita|poem/.test(text)) {
+      mood = 'vintage_coffee';
+    } else if (/🔥|⚡|😎|🎉|🥳|💃|cool|fire|vibe|party|rock|dance|music|neon|magic|banger/.test(text)) {
+      mood = 'cyber_neon';
+    } else if (/🕊️|🖤|💎|👑|🎯|peace|calm|focus|success|quote|attitude|simple|monochrome/.test(text)) {
+      mood = 'classy_minimal';
+    }
+
+    // Curated Aesthetic Variations for each mood
+    const moodProfiles = {
+      cute_playful: [
+        {
+          name: 'Lavender Pop',
+          sceneId: 'purple',
+          paletteIndex: 0,
+          font: 'Outfit',
+          animMode: 'type',
+          frameStyle: 'neon',
+          doodles: ['spark', 'twinkle'],
+          colorMode: 'solid',
+          glowBlur: 28,
+          fontWeight: '600'
+        },
+        {
+          name: 'Dreamy Bounce',
+          sceneId: 'dreamy',
+          paletteIndex: 10,
+          font: 'Dancing Script',
+          animMode: 'pop',
+          frameStyle: 'gradient',
+          doodles: ['spark', 'bubbles'],
+          colorMode: 'gradient',
+          glowBlur: 32,
+          fontWeight: '700'
+        },
+        {
+          name: 'Sakura Blush',
+          sceneId: 'sakura',
+          paletteIndex: 3,
+          font: 'Playfair Display',
+          animMode: 'fade',
+          frameStyle: 'vintage',
+          doodles: ['petals', 'twinkle'],
+          colorMode: 'solid',
+          glowBlur: 24,
+          fontWeight: '600'
+        },
+        {
+          name: 'Mint Glass',
+          sceneId: 'glass',
+          paletteIndex: 6,
+          font: 'Montserrat',
+          animMode: 'slide_up',
+          frameStyle: 'box',
+          doodles: ['spark', 'orbit'],
+          colorMode: 'glow',
+          glowBlur: 26,
+          fontWeight: '700'
+        }
+      ],
+      romantic_love: [
+        {
+          name: 'Rose Romance',
+          sceneId: 'sakura',
+          paletteIndex: 2,
+          font: 'Playfair Display',
+          animMode: 'pop',
+          frameStyle: 'vintage',
+          doodles: ['hearts', 'petals'],
+          colorMode: 'gradient',
+          glowBlur: 30,
+          fontWeight: '600'
+        },
+        {
+          name: 'Velvet Heartbeat',
+          sceneId: 'purple',
+          paletteIndex: 0,
+          font: 'Dancing Script',
+          animMode: 'type',
+          frameStyle: 'neon',
+          doodles: ['hearts', 'spark'],
+          colorMode: 'solid',
+          glowBlur: 28,
+          fontWeight: '700'
+        },
+        {
+          name: 'Warm Sunset Love',
+          sceneId: 'dreamy',
+          paletteIndex: 7,
+          font: 'Outfit',
+          animMode: 'fade',
+          frameStyle: 'gradient',
+          doodles: ['hearts', 'twinkle'],
+          colorMode: 'glow',
+          glowBlur: 32,
+          fontWeight: '600'
+        }
+      ],
+      dreamy_night: [
+        {
+          name: 'Midnight Celestial',
+          sceneId: 'moonlight',
+          paletteIndex: 1,
+          font: 'Playfair Display',
+          animMode: 'cinematic',
+          frameStyle: 'corners',
+          doodles: ['stars', 'shooting_star'],
+          colorMode: 'solid',
+          glowBlur: 26,
+          fontWeight: '600'
+        },
+        {
+          name: 'Cosmic Aurora',
+          sceneId: 'aurora',
+          paletteIndex: 0,
+          font: 'Outfit',
+          animMode: 'wave',
+          frameStyle: 'neon',
+          doodles: ['stars', 'twinkle'],
+          colorMode: 'rainbow',
+          glowBlur: 30,
+          fontWeight: '700'
+        },
+        {
+          name: 'Cloudy Slumber',
+          sceneId: 'cloudy',
+          paletteIndex: 4,
+          font: 'Caveat',
+          animMode: 'fade',
+          frameStyle: 'box',
+          doodles: ['clouds', 'stars'],
+          colorMode: 'solid',
+          glowBlur: 22,
+          fontWeight: '700'
+        }
+      ],
+      fresh_morning: [
+        {
+          name: 'Emerald Sunrise',
+          sceneId: 'nature',
+          paletteIndex: 11,
+          font: 'Outfit',
+          animMode: 'slide_up',
+          frameStyle: 'double',
+          doodles: ['twinkle', 'butterflies'],
+          colorMode: 'solid',
+          glowBlur: 24,
+          fontWeight: '600'
+        },
+        {
+          name: 'Golden Radiance',
+          sceneId: 'dreamy',
+          paletteIndex: 10,
+          font: 'Playfair Display',
+          animMode: 'zoom_in',
+          frameStyle: 'gradient',
+          doodles: ['spark', 'twinkle'],
+          colorMode: 'gradient',
+          glowBlur: 32,
+          fontWeight: '700'
+        },
+        {
+          name: 'Fresh Bloom',
+          sceneId: 'sakura',
+          paletteIndex: 6,
+          font: 'Montserrat',
+          animMode: 'pop',
+          frameStyle: 'corners',
+          doodles: ['petals', 'spark'],
+          colorMode: 'solid',
+          glowBlur: 25,
+          fontWeight: '600'
+        }
+      ],
+      moody_rain: [
+        {
+          name: 'Rainy Slate',
+          sceneId: 'rain',
+          paletteIndex: 2,
+          font: 'Inter',
+          animMode: 'type',
+          frameStyle: 'corners',
+          doodles: ['rain', 'drizzle'],
+          colorMode: 'solid',
+          glowBlur: 24,
+          fontWeight: '600'
+        },
+        {
+          name: 'Ocean Ripple',
+          sceneId: 'ocean',
+          paletteIndex: 4,
+          font: 'Montserrat',
+          animMode: 'wave',
+          frameStyle: 'box',
+          doodles: ['bubbles', 'drizzle'],
+          colorMode: 'gradient',
+          glowBlur: 28,
+          fontWeight: '600'
+        }
+      ],
+      vintage_coffee: [
+        {
+          name: 'Warm Parchment',
+          sceneId: 'paper',
+          paletteIndex: 5,
+          font: 'Caveat',
+          animMode: 'handwriting',
+          frameStyle: 'vintage',
+          doodles: ['doodles'],
+          colorMode: 'solid',
+          glowBlur: 18,
+          fontWeight: '700'
+        },
+        {
+          name: 'Cafe Poetry',
+          sceneId: 'paper',
+          paletteIndex: 5,
+          font: 'Playfair Display',
+          animMode: 'type',
+          frameStyle: 'double',
+          doodles: ['spark', 'doodles'],
+          colorMode: 'solid',
+          glowBlur: 22,
+          fontWeight: '600'
+        }
+      ],
+      cyber_neon: [
+        {
+          name: 'Cyberpunk Neon',
+          sceneId: 'city',
+          paletteIndex: 9,
+          font: 'Outfit',
+          animMode: 'neon',
+          frameStyle: 'neon',
+          doodles: ['spark', 'orbit'],
+          colorMode: 'rainbow',
+          glowBlur: 35,
+          fontWeight: '800'
+        },
+        {
+          name: 'Electric Pulse',
+          sceneId: 'purple',
+          paletteIndex: 9,
+          font: 'Montserrat',
+          animMode: 'cascade',
+          frameStyle: 'dotted',
+          doodles: ['shooting_star', 'spark'],
+          colorMode: 'glow',
+          glowBlur: 30,
+          fontWeight: '700'
+        }
+      ],
+      classy_minimal: [
+        {
+          name: 'Obsidian Minimal',
+          sceneId: 'minimal',
+          paletteIndex: 8,
+          font: 'Inter',
+          animMode: 'type',
+          frameStyle: 'box',
+          doodles: ['stars'],
+          colorMode: 'solid',
+          glowBlur: 20,
+          fontWeight: '600'
+        },
+        {
+          name: 'Cinematic Luxury',
+          sceneId: 'cinematic',
+          paletteIndex: 10,
+          font: 'Cinzel',
+          animMode: 'cinematic',
+          frameStyle: 'none',
+          doodles: ['shooting_star', 'spark'],
+          colorMode: 'gradient',
+          glowBlur: 24,
+          fontWeight: '700'
+        }
+      ]
+    };
+
+    const variations = moodProfiles[mood] || moodProfiles.cute_playful;
+    const selected = variations[(this.autoStyleCounter - 1) % variations.length];
+
+    // Apply Profile Settings
+    this.state.sceneId = selected.sceneId;
+    this.state.paletteIndex = selected.paletteIndex;
+    this.state.font = selected.font;
+    this.state.animMode = selected.animMode;
+    this.state.frameStyle = selected.frameStyle;
+    this.state.activeDoodles = [...selected.doodles];
+    this.state.colorMode = selected.colorMode;
+    this.state.glowBlur = selected.glowBlur;
+    this.state.fontWeight = selected.fontWeight || '600';
+    this.state.showFrame = selected.frameStyle !== 'none';
+
+    // Clear manual overrides to let the auto theme shine
+    this.state.customColors.text = null;
+    this.state.customColors.glow = null;
+    this.state.customColors.doodle = null;
+    this.state.frameColor = null;
+
+    // Intelligent Font Size & Speed calculation based on text length
+    if (len <= 10) {
+      this.state.fontSize = 58;
+      this.state.speed = 80;
+    } else if (len <= 22) {
+      this.state.fontSize = 50;
+      this.state.speed = 68;
+    } else if (len <= 45) {
+      this.state.fontSize = 42;
+      this.state.speed = 55;
     } else {
-      this.state.sceneId = 'aurora';
-      this.state.paletteIndex = 0;
-      this.state.font = 'Outfit';
-      this.state.animMode = 'wave';
-      this.state.frameStyle = 'corners';
-      this.state.activeDoodles = ['spark', 'twinkle'];
+      this.state.fontSize = 34;
+      this.state.speed = 45;
     }
 
     this.timeline.reset();
     this.syncUIFromState();
-    this.showToast('Auto Styled Perfectly!');
+    const currentIdx = ((this.autoStyleCounter - 1) % variations.length) + 1;
+    this.showToast(`Auto Styled: ${selected.name} (${currentIdx}/${variations.length})`);
   }
 
   showToast(msg) {
