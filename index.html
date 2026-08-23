@@ -32,6 +32,9 @@
       </div>
 
       <div class="topActions">
+        <button class="topActionBtn" id="shareBtn" title="Share Design Link">
+          <i data-lucide="share-2"></i> <span>Share</span>
+        </button>
         <button class="topActionBtn" id="surpriseBtn" title="Harmonious Random Design">
           <i data-lucide="dices"></i> <span>Surprise Me</span>
         </button>
@@ -89,12 +92,18 @@
             <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
+            <!-- 1-Tap Quick Emoji Toolbar -->
+            <div class="quickEmojiSection">
+              <span class="inputLabel" style="margin-bottom: 4px;">Quick Emoji Insert</span>
+              <div class="quickEmojiBar" id="quickEmojiBar"></div>
+            </div>
+
             <div class="controlRow">
               <label class="inputLabel" for="textInput">Your Message</label>
               <textarea id="textInput" class="textInputArea" placeholder="Type your message here...">Hello Ji...😊</textarea>
             </div>
             <div class="controlRow">
-              <label class="inputLabel">Quick Presets (1-Tap Change)</label>
+              <label class="inputLabel">Curated Presets & Bio Quotes</label>
               <div id="messagePresetsList"></div>
             </div>
           </div>
@@ -110,6 +119,21 @@
           </div>
           <div class="accordionBody">
             <div class="scenesGrid" id="scenesGrid"></div>
+
+            <!-- Atmospheric Effects Toggles -->
+            <div class="atmosphericSection">
+              <div class="frameStudioTitle">
+                <i data-lucide="clapperboard"></i> <span>Atmospheric Cinema Effects</span>
+              </div>
+              <div class="grid2">
+                <label class="checkboxLabel">
+                  <input type="checkbox" id="filmGrainToggle"> Film Grain Texture
+                </label>
+                <label class="checkboxLabel">
+                  <input type="checkbox" id="vignetteToggle"> Dark Vignette Edge
+                </label>
+              </div>
+            </div>
 
             <!-- Frame Studio Controls -->
             <div class="frameStudioSection">
@@ -419,6 +443,9 @@
             <div class="exportButtons">
               <button class="btnExport primary" id="exportGifBtn">
                 <i data-lucide="download"></i> <span>Download GIF</span>
+              </button>
+              <button class="btnExport" id="exportCompactGifBtn" title="Optimized for Telegram DP under 5MB">
+                <i data-lucide="zap"></i> <span>Compact GIF (&lt;5MB)</span>
               </button>
               <button class="btnExport" id="exportMp4Btn">
                 <i data-lucide="video"></i> <span>Download MP4</span>

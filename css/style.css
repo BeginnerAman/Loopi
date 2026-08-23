@@ -226,6 +226,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: none;
 }
 
 #previewCanvas {
@@ -233,6 +234,7 @@ body {
   height: 100%;
   display: block;
   object-fit: contain;
+  cursor: crosshair;
 }
 
 /* Telegram DP Circular Preview Mask */
@@ -389,10 +391,59 @@ body {
   padding-top: 12px;
 }
 
+/* Quick Emoji Toolbar */
+.quickEmojiSection {
+  margin-bottom: 10px;
+}
+
+.quickEmojiBar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.quickEmojiBar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.quickEmojiBar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.quickEmojiBtn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 4px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.quickEmojiBtn:hover {
+  border-color: var(--accent);
+  transform: scale(1.15);
+}
+
+.quickEmojiBtn:active {
+  transform: scale(0.95);
+}
+
+/* Atmospheric Section */
+.atmosphericSection {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
 /* Frame Studio Section */
 .frameStudioSection {
-  margin-top: 14px;
-  padding-top: 12px;
+  margin-top: 12px;
+  padding-top: 10px;
   border-top: 1px dashed var(--border);
 }
 
@@ -789,7 +840,7 @@ body {
 /* Export Actions */
 .exportButtons {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 10px;
 }
@@ -799,21 +850,22 @@ body {
   background: var(--panel-sub);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 11px 6px;
+  padding: 10px 8px;
   border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 11.5px;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 6px;
   transition: all 0.18s ease;
+  min-height: 40px;
 }
 
 .btnExport .lucide {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 }
 
 .btnExport.primary {
@@ -968,13 +1020,7 @@ body {
     gap: 6px;
   }
   .btnExport {
-    flex-direction: row;
-    justify-content: center;
     padding: 10px;
-  }
-  .btnExport .lucide {
-    margin-bottom: 0;
-    margin-right: 4px;
   }
   .accordionHeader {
     padding: 12px;

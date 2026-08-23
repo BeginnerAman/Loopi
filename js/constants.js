@@ -1,47 +1,57 @@
 /**
  * DP Creator Studio V4 - Constants & Presets
- * Clean UI Lucide icon mappings and universal presets
+ * Clean UI Lucide icon mappings, Quick Emojis, and Universal Presets
  */
 
 export const DEFAULT_TEXT = 'Hello Ji...😊';
 
+export const QUICK_EMOJIS = [
+  '😊', '✨', '🌸', '🌙', '💖', '☀️', '👀', '☕', '🦋', '🕊️', '❄️', '🔥', '💫', '🌹', '🤍', '🎉', '⚡', '🖤'
+];
+
 export const MESSAGE_PRESETS = [
   {
-    category: 'Cute',
+    category: 'Cute & Friendly',
     items: [
       'Hello Ji...😊',
       'Suniye na ✨',
       'Smile please 😊',
-      'Sweet dreams 🌙',
-      'Always shining ✨'
-    ]
-  },
-  {
-    category: 'Simple',
-    items: [
-      'Hello Ji...✨',
-      'Welcome! 🌸',
-      'Good Vibes Only 💫',
-      'Stay Blessed 🌿',
-      'Peace & Love 🕊️'
-    ]
-  },
-  {
-    category: 'Friendly',
-    items: [
       'Arey Ji... 👋',
       'Kaise hain aap? 🌿',
-      'Aur batao Ji... ☕',
-      'Kaha gayab ho aaj kal? 🧐'
+      'Aur batao Ji... ☕'
     ]
   },
   {
-    category: 'Playful',
+    category: 'Aesthetic Quotes',
     items: [
-      'Sun rahe hain? 👀',
-      'Caught you looking! 😉',
-      'Thinking of you... 💭',
-      'Secretly cool 😎'
+      'Silence is luxury 🖤',
+      'Dream big, shine brighter ✨',
+      'Creating my own sunshine ☀️',
+      'Peace over drama 🕊️',
+      'Healing & Glowing 🌿',
+      'Radiate positive vibes 💫'
+    ]
+  },
+  {
+    category: 'Mood & Vibes',
+    items: [
+      'Current mood: Vibing 💫',
+      'Soft heart, strong mind 🌸',
+      'Chasing sunsets & dreams 🌅',
+      'Secretly cool 😎',
+      'Not available right now ☕',
+      'Caught you looking! 😉'
+    ]
+  },
+  {
+    category: 'Sweet & Romantic',
+    items: [
+      'You make me smile 💖',
+      'Forever & Always ✨',
+      'Sweet dreams 🌙',
+      'My favorite notification 💌',
+      'Always shining ✨',
+      'Have a magical day 🌸'
     ]
   },
   {
@@ -50,16 +60,7 @@ export const MESSAGE_PRESETS = [
       'Good Morning Ji... ☀️',
       'Subah Bakhair 🌅',
       'Good Night 🌙',
-      'Have a magical day 🌸'
-    ]
-  },
-  {
-    category: 'Sweet & Warm',
-    items: [
-      'Have a great day ✨',
-      'You make me smile 💖',
-      'Forever & Always ✨',
-      'My favorite notification 💌'
+      'Have a blessed day 🌿'
     ]
   }
 ];

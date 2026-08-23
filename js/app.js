@@ -1,10 +1,11 @@
 /**
  * DP Creator Studio V4 - Main App Controller & State Management
- * Lucide Icons Integration, Mobile-First 60fps Loop, Frame Studio
+ * Quick Emoji Bar, Interactive Touch Emitter, Shareable URL Hash, Compact GIF Mode
  */
 
 import {
   DEFAULT_TEXT,
+  QUICK_EMOJIS,
   MESSAGE_PRESETS,
   FRAME_STYLES,
   SCENES,
@@ -50,12 +51,14 @@ class DPStudioApp {
       },
       colorMode: 'solid',
       
-      // Frame Studio
+      // Frame Studio & Atmosphere
       frameStyle: 'neon',
       frameColor: null,
       frameWidth: 2,
       framePadding: 26,
       showFrame: true,
+      filmGrain: false,
+      vignette: false,
 
       // Typography
       font: 'Outfit',
@@ -102,10 +105,13 @@ class DPStudioApp {
       isExporting: false
     };
 
+    this.autoStyleCounter = 0;
     this.init();
   }
 
   init() {
+    this.loadStateFromURLHash();
+    this.buildQuickEmojisUI();
     this.buildPresetsUI();
     this.buildFramesUI();
     this.buildScenesUI();
@@ -129,6 +135,39 @@ class DPStudioApp {
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
       lucide.createIcons();
     }
+  }
+
+  // Load state from shareable URL Hash if present
+  loadStateFromURLHash() {
+    try {
+      if (window.location.hash && window.location.hash.length > 2) {
+        const hashStr = window.location.hash.substring(1);
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(hashStr))));
+        if (decoded && decoded.text) {
+          Object.assign(this.state, decoded);
+        }
+      }
+    } catch (e) {
+      // Ignore invalid hash gracefully
+    }
+  }
+
+  // Generate shareable URL
+  getShareableURL() {
+    const compactState = {
+      text: this.state.text,
+      sceneId: this.state.sceneId,
+      paletteIndex: this.state.paletteIndex,
+      font: this.state.font,
+      animMode: this.state.animMode,
+      frameStyle: this.state.frameStyle,
+      activeDoodles: this.state.activeDoodles,
+      fontSize: this.state.fontSize,
+      glowBlur: this.state.glowBlur,
+      colorMode: this.state.colorMode
+    };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compactState))));
+    return `${window.location.origin}${window.location.pathname}#${encoded}`;
   }
 
   getCurrentPalette() {
@@ -155,17 +194,19 @@ class DPStudioApp {
       this.state.loop
     );
 
-    // 1. Draw Immersive Scene Background + Frame Studio
+    // 1. Draw Immersive Scene Background + Frame Studio + Atmosphere
     const frameColor = this.state.frameColor || palette.primary;
     this.backgrounds.draw(ctx, W, H, time, this.state.sceneId, palette, {
       frameStyle: this.state.frameStyle,
       frameColor: frameColor,
       frameWidth: this.state.frameWidth * (W / 720),
       framePadding: this.state.framePadding * (W / 720),
-      showFrame: this.state.showFrame && this.state.frameStyle !== 'none'
+      showFrame: this.state.showFrame && this.state.frameStyle !== 'none',
+      filmGrain: this.state.filmGrain,
+      vignette: this.state.vignette
     });
 
-    // 2. Draw Multi-Layer Particle Doodles
+    // 2. Draw Multi-Layer Particle Doodles & Interactive Touch Sparkles
     const doodleColor = this.state.customColors.doodle || palette.primary;
     this.particles.draw(
       ctx,
@@ -238,6 +279,29 @@ class DPStudioApp {
     if (timelineTime) {
       timelineTime.textContent = `${(elapsed / 1000).toFixed(1)}s / ${(timing.totalMs / 1000).toFixed(1)}s`;
     }
+  }
+
+  // 1-Tap Quick Emoji Toolbar
+  buildQuickEmojisUI() {
+    const container = document.getElementById('quickEmojiBar');
+    if (!container) return;
+    container.innerHTML = '';
+
+    QUICK_EMOJIS.forEach(emoji => {
+      const btn = document.createElement('button');
+      btn.className = 'quickEmojiBtn';
+      btn.textContent = emoji;
+      btn.title = `Add ${emoji}`;
+
+      btn.onclick = () => {
+        const input = document.getElementById('textInput');
+        this.state.text = (this.state.text || '') + emoji;
+        input.value = this.state.text;
+        this.timeline.reset();
+        this.highlightActivePreset();
+      };
+      container.appendChild(btn);
+    });
   }
 
   // Build Presets UI
@@ -484,7 +548,6 @@ class DPStudioApp {
     const text = (this.state.text || '').toLowerCase();
     const len = this.state.text.length;
 
-    // Detect Mood Category
     let mood = 'cute_playful';
 
     if (/❤️|💖|💕|💌|🥰|😘|🌹|💐|love|pyaar|dil|heart|ishq|miss|sweet|jaan|forever/.test(text)) {
@@ -503,7 +566,6 @@ class DPStudioApp {
       mood = 'classy_minimal';
     }
 
-    // Curated Aesthetic Variations for each mood
     const moodProfiles = {
       cute_playful: [
         {
@@ -778,7 +840,6 @@ class DPStudioApp {
     const variations = moodProfiles[mood] || moodProfiles.cute_playful;
     const selected = variations[(this.autoStyleCounter - 1) % variations.length];
 
-    // Apply Profile Settings
     this.state.sceneId = selected.sceneId;
     this.state.paletteIndex = selected.paletteIndex;
     this.state.font = selected.font;
@@ -790,13 +851,11 @@ class DPStudioApp {
     this.state.fontWeight = selected.fontWeight || '600';
     this.state.showFrame = selected.frameStyle !== 'none';
 
-    // Clear manual overrides to let the auto theme shine
     this.state.customColors.text = null;
     this.state.customColors.glow = null;
     this.state.customColors.doodle = null;
     this.state.frameColor = null;
 
-    // Intelligent Font Size & Speed calculation based on text length
     if (len <= 10) {
       this.state.fontSize = 58;
       this.state.speed = 80;
@@ -855,13 +914,15 @@ class DPStudioApp {
     setOut('textOpacityOut', `${this.state.opacity}%`);
     setVal('colorMode', this.state.colorMode);
 
-    // Frame UI
+    // Frame UI & Atmosphere
     setVal('frameStyleSelect', this.state.frameStyle);
     setVal('frameWidth', this.state.frameWidth);
     setOut('frameWidthOut', `${this.state.frameWidth}px`);
     setVal('framePadding', this.state.framePadding);
     setOut('framePaddingOut', `${this.state.framePadding}px`);
     setChecked('showFrame', this.state.showFrame && this.state.frameStyle !== 'none');
+    setChecked('filmGrainToggle', this.state.filmGrain);
+    setChecked('vignetteToggle', this.state.vignette);
 
     setVal('glowBlur', this.state.glowBlur);
     setOut('glowBlurOut', this.state.glowBlur);
@@ -916,6 +977,24 @@ class DPStudioApp {
     $('surpriseBtn').onclick = () => this.surpriseMe();
     $('autoStyleBtn').onclick = () => this.autoStyle();
     $('replayBtn').onclick = () => this.timeline.reset();
+    
+    // Share Design Button
+    const shareBtn = $('shareBtn');
+    if (shareBtn) {
+      shareBtn.onclick = () => {
+        const shareURL = this.getShareableURL();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareURL).then(() => {
+            this.showToast('Design Link copied to clipboard!');
+          }).catch(() => {
+            prompt('Copy your Design Link:', shareURL);
+          });
+        } else {
+          prompt('Copy your Design Link:', shareURL);
+        }
+      };
+    }
+
     $('playPauseBtn').onclick = () => {
       this.timeline.togglePlay();
       const icon = $('playPauseBtn').querySelector('i');
@@ -925,6 +1004,24 @@ class DPStudioApp {
       }
     };
 
+    // Interactive Touch & Drag Sparkle Emitter
+    const handleTouchPointer = e => {
+      const rect = this.canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      if (clientX === undefined || clientY === undefined) return;
+      const x = ((clientX - rect.left) / rect.width) * this.W;
+      const y = ((clientY - rect.top) / rect.height) * this.H;
+      const palette = this.getCurrentPalette();
+      this.particles.emitTouch(x, y, palette.primary, 3);
+    };
+
+    this.canvas.addEventListener('pointerdown', handleTouchPointer);
+    this.canvas.addEventListener('pointermove', e => {
+      if (e.buttons > 0) handleTouchPointer(e);
+    });
+    this.canvas.addEventListener('touchmove', handleTouchPointer, { passive: true });
+
     // Text Input
     $('textInput').oninput = e => {
       this.state.text = e.target.value;
@@ -932,7 +1029,7 @@ class DPStudioApp {
       this.highlightActivePreset();
     };
 
-    // Frame Studio Controls
+    // Frame Studio & Atmosphere
     $('frameStyleSelect').onchange = e => {
       this.state.frameStyle = e.target.value;
       this.state.showFrame = e.target.value !== 'none';
@@ -953,6 +1050,15 @@ class DPStudioApp {
       else if (this.state.frameStyle === 'none') this.state.frameStyle = 'corners';
       $('frameStyleSelect').value = this.state.frameStyle;
     };
+
+    const grainToggle = $('filmGrainToggle');
+    if (grainToggle) {
+      grainToggle.onchange = e => (this.state.filmGrain = e.target.checked);
+    }
+    const vignetteToggle = $('vignetteToggle');
+    if (vignetteToggle) {
+      vignetteToggle.onchange = e => (this.state.vignette = e.target.checked);
+    }
 
     // Typography
     $('fontSelect').onchange = e => (this.state.font = e.target.value);
@@ -1084,7 +1190,7 @@ class DPStudioApp {
     timelineTrack.addEventListener('touchstart', e => handleScrub(e), { passive: true });
     timelineTrack.addEventListener('touchmove', e => handleScrub(e), { passive: true });
 
-    // Preview Mode Switcher (Canvas | Telegram DP | Fullscreen)
+    // Preview Mode Switcher
     document.querySelectorAll('.previewModeBtn').forEach(b => {
       b.onclick = () => {
         document.querySelectorAll('.previewModeBtn').forEach(z => z.classList.remove('active'));
@@ -1123,6 +1229,10 @@ class DPStudioApp {
 
     // Export Triggers
     $('exportGifBtn').onclick = () => this.handleExport('gif');
+    const compactGifBtn = $('exportCompactGifBtn');
+    if (compactGifBtn) {
+      compactGifBtn.onclick = () => this.handleExport('compact-gif');
+    }
     $('exportMp4Btn').onclick = () => this.handleExport('mp4');
     $('exportPngBtn').onclick = () => this.handleExport('png');
   }
@@ -1157,10 +1267,20 @@ class DPStudioApp {
         await this.exporter.exportPNG({ resolution: res }, timing);
         progBar.style.width = '100%';
         progText.textContent = '100%';
+      } else if (format === 'compact-gif') {
+        exportStatus.textContent = 'Encoding Telegram/Discord Compact GIF (<5MB)...';
+        await this.exporter.exportGIF(
+          { resolution: 380, fps: 14, durationMs: timing.totalMs, compact: true },
+          timing,
+          p => {
+            progBar.style.width = `${p}%`;
+            progText.textContent = `${p}%`;
+          }
+        );
       } else if (format === 'gif') {
         exportStatus.textContent = 'Rendering GIF frames & quantizing colors...';
         await this.exporter.exportGIF(
-          { resolution: res, fps, durationMs: timing.totalMs },
+          { resolution: res, fps, durationMs: timing.totalMs, compact: false },
           timing,
           p => {
             progBar.style.width = `${p}%`;

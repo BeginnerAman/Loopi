@@ -1,6 +1,6 @@
 /**
  * DP Creator Studio V4 - High-Performance Export Studio
- * Watermark-Free GIF, MP4, WebM & PNG Exporters with Synchronized Timing
+ * Watermark-Free GIF, MP4, WebM & PNG Exporters with Synchronized Timing & Compact GIF Mode
  */
 
 export class Exporter {
@@ -126,14 +126,15 @@ export class Exporter {
     }
   }
 
-  // GIF Export with embedded fast palette quantization and LZW encoding
+  // GIF Export with embedded fast palette quantization, LZW encoding & Compact mode
   async exportGIF(options, timing, onProgress) {
     if (this.isExporting) return;
     this.isExporting = true;
 
     try {
-      const size = Math.min(512, options.resolution || 360);
-      const fps = Math.min(24, options.fps || 15);
+      const isCompact = options.compact === true;
+      const size = isCompact ? 380 : Math.min(512, options.resolution || 360);
+      const fps = isCompact ? 14 : Math.min(24, options.fps || 16);
       const durationMs = timing ? timing.totalMs : (options.durationMs || 3500);
       const totalFrames = Math.ceil((durationMs / 1000) * fps);
 
@@ -165,13 +166,14 @@ export class Exporter {
 
       // 2. Encode GIF bytes
       const delayCentisecs = Math.round(100 / fps);
-      const gifBlob = await this.encodeGIF(frames, size, size, delayCentisecs, prog => {
+      const maxColors = isCompact ? 128 : 256;
+      const gifBlob = await this.encodeGIF(frames, size, size, delayCentisecs, maxColors, prog => {
         if (onProgress) {
           onProgress(50 + Math.round(prog * 50));
         }
       });
 
-      const filename = `dp-motion-${Date.now()}.gif`;
+      const filename = `dp-motion-${isCompact ? 'compact-' : ''}${Date.now()}.gif`;
       this.downloadBlob(gifBlob, filename);
       if (onProgress) onProgress(100);
       return { success: true, filename };
@@ -181,8 +183,8 @@ export class Exporter {
   }
 
   // Client-side lightweight high-quality GIF89a builder
-  async encodeGIF(frames, w, h, delayCs, onProg) {
-    const palette = this.buildPalette(frames[0]);
+  async encodeGIF(frames, w, h, delayCs, maxColors = 256, onProg) {
+    const palette = this.buildPalette(frames[0], maxColors);
     const colorMap = new Map();
     for (let i = 0; i < palette.length; i++) {
       const key = `${palette[i][0]},${palette[i][1]},${palette[i][2]}`;
@@ -252,7 +254,7 @@ export class Exporter {
     return new Blob([new Uint8Array(out)], { type: 'image/gif' });
   }
 
-  buildPalette(firstFrameRGBA) {
+  buildPalette(firstFrameRGBA, maxColors = 256) {
     const palette = [];
     const seen = new Set();
 
@@ -264,7 +266,7 @@ export class Exporter {
       if (!seen.has(key)) {
         seen.add(key);
         palette.push([r, g, b]);
-        if (palette.length >= 256) break;
+        if (palette.length >= maxColors) break;
       }
     }
 

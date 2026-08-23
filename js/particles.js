@@ -1,12 +1,28 @@
 /**
  * DP Creator Studio V4 - High Performance Particle & Doodle Physics Engine
- * Multi-layer rendering, object-pooled, 60fps mobile optimized
+ * Multi-layer rendering, object-pooled, 60fps mobile optimized, Interactive Touch Emitter
  */
 
 export class ParticleEngine {
   constructor() {
     this.pools = new Map();
     this.maxPoolSize = 100;
+
+    // Interactive Touch Sparkles Pool
+    this.touchSparkles = [];
+    for (let i = 0; i < 45; i++) {
+      this.touchSparkles.push({
+        active: false,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        size: 1,
+        life: 0,
+        maxLife: 600,
+        color: '#ffffff'
+      });
+    }
   }
 
   getPool(type) {
@@ -31,13 +47,77 @@ export class ParticleEngine {
     return this.pools.get(type);
   }
 
-  draw(ctx, W, H, time, activeDoodles, config, palette) {
-    if (!activeDoodles || activeDoodles.length === 0) return;
-
-    for (const doodleId of activeDoodles) {
-      if (doodleId === 'none') continue;
-      this.renderDoodleLayer(ctx, W, H, time, doodleId, config, palette);
+  // Emit interactive touch sparkles on user tap or drag
+  emitTouch(x, y, color = '#ffffff', count = 3) {
+    let emitted = 0;
+    for (let i = 0; i < this.touchSparkles.length && emitted < count; i++) {
+      const p = this.touchSparkles[i];
+      if (!p.active) {
+        p.active = true;
+        p.x = x + (Math.random() - 0.5) * 16;
+        p.y = y + (Math.random() - 0.5) * 16;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 1.8 + 0.5;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed - 0.5;
+        p.size = Math.random() * 4 + 3;
+        p.life = 0;
+        p.maxLife = Math.random() * 250 + 350;
+        p.color = color;
+        emitted++;
+      }
     }
+  }
+
+  draw(ctx, W, H, time, activeDoodles, config, palette) {
+    if (activeDoodles && activeDoodles.length > 0) {
+      for (const doodleId of activeDoodles) {
+        if (doodleId === 'none') continue;
+        this.renderDoodleLayer(ctx, W, H, time, doodleId, config, palette);
+      }
+    }
+
+    // Render interactive touch sparkles
+    this.renderTouchSparkles(ctx, palette);
+  }
+
+  renderTouchSparkles(ctx, palette) {
+    ctx.save();
+    for (let i = 0; i < this.touchSparkles.length; i++) {
+      const p = this.touchSparkles[i];
+      if (p.active) {
+        p.life += 16.6;
+        if (p.life >= p.maxLife) {
+          p.active = false;
+          continue;
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.04; // Gentle gravity
+        p.vx *= 0.98;
+
+        const progress = p.life / p.maxLife;
+        const alpha = (1 - progress) * 0.9;
+        const s = p.size * (1 - progress * 0.5);
+
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = p.color || palette.primary;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(p.x - s, p.y);
+        ctx.lineTo(p.x + s, p.y);
+        ctx.moveTo(p.x, p.y - s);
+        ctx.lineTo(p.x, p.y + s);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, s * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
   }
 
   renderDoodleLayer(ctx, W, H, time, type, config, palette) {
@@ -120,15 +200,12 @@ export class ParticleEngine {
 
       ctx.globalAlpha = (0.2 + 0.75 * pulse) * opacity;
       ctx.beginPath();
-      // Horizontal flare
       ctx.moveTo(px - s * 2, py);
       ctx.lineTo(px + s * 2, py);
-      // Vertical flare
       ctx.moveTo(px, py - s * 2);
       ctx.lineTo(px, py + s * 2);
       ctx.stroke();
 
-      // Center bright core
       ctx.beginPath();
       ctx.arc(px, py, s * 0.35, 0, Math.PI * 2);
       ctx.fill();
@@ -325,12 +402,10 @@ export class ParticleEngine {
       ctx.translate(px, py);
       ctx.rotate(rot);
 
-      // Left wing
       ctx.beginPath();
       ctx.ellipse(-s * 0.5 * flap, -s * 0.2, s * 0.6 * flap, s * 0.45, -0.3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Right wing
       ctx.beginPath();
       ctx.ellipse(s * 0.5 * flap, -s * 0.2, s * 0.6 * flap, s * 0.45, 0.3, 0, Math.PI * 2);
       ctx.fill();
@@ -383,12 +458,10 @@ export class ParticleEngine {
       const alpha = (0.2 + 0.55 * Math.sin(Math.min(1, prog / 1.05) * Math.PI)) * opacity;
       ctx.globalAlpha = alpha;
 
-      // Outer bubble rim
       ctx.beginPath();
       ctx.arc(px, py, r, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Specular highlight
       ctx.globalAlpha = alpha * 0.8;
       ctx.beginPath();
       ctx.arc(px - r * 0.35, py - r * 0.35, r * 0.25, 0, Math.PI * 2);
@@ -438,7 +511,6 @@ export class ParticleEngine {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Satellites
     const satCount = Math.max(2, Math.round(count * 0.5));
     for (let i = 0; i < satCount; i++) {
       const ang = time * 0.0006 * speed + (i * Math.PI * 2) / satCount;
@@ -451,7 +523,6 @@ export class ParticleEngine {
       ctx.arc(px, py, r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Satellite halo
       ctx.globalAlpha = 0.3 * opacity;
       ctx.beginPath();
       ctx.arc(px, py, r * 2.2, 0, Math.PI * 2);
@@ -464,7 +535,7 @@ export class ParticleEngine {
     for (let i = 0; i < count; i++) {
       const cycle = 3500 / speed;
       const localTime = (time + i * 1400) % cycle;
-      if (localTime > 900) continue; // Only active in burst phase
+      if (localTime > 900) continue;
 
       const prog = localTime / 900;
       const startX = W * (0.2 + 0.6 * (i % 3));
@@ -494,7 +565,7 @@ export class ParticleEngine {
     }
   }
 
-  // 15. Hand-drawn Doodles (Squiggles, Loops & Hearts)
+  // 15. Hand-drawn Doodles
   renderHandDoodles(ctx, W, H, time, pool, count, sizeScale, speed, opacity, color) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 2.2 * sizeScale;
@@ -515,13 +586,11 @@ export class ParticleEngine {
       ctx.rotate(p.rot + Math.sin(time * 0.001 * speed + p.seed) * 0.3);
 
       if (i % 3 === 0) {
-        // Scribble loop
         ctx.beginPath();
         ctx.arc(0, 0, s * 0.6, 0, Math.PI * 1.5);
         ctx.bezierCurveTo(s, s * 0.5, s * 0.5, -s, 0, -s * 0.3);
         ctx.stroke();
       } else if (i % 3 === 1) {
-        // Star cross
         ctx.beginPath();
         ctx.moveTo(-s, 0);
         ctx.lineTo(s, 0);
@@ -531,7 +600,6 @@ export class ParticleEngine {
         ctx.lineTo(s * 0.5, s * 0.5);
         ctx.stroke();
       } else {
-        // Mini wave doodle
         ctx.beginPath();
         ctx.moveTo(-s, 0);
         ctx.quadraticCurveTo(-s * 0.5, -s * 0.8, 0, 0);

@@ -1,11 +1,31 @@
 /**
- * DP Creator Studio V4 - 14 Immersive Visual Scene Presets & Frame Studio
- * 8 Modular Frame Styles, Custom Frame Colors, Thickness & Padding Controls
+ * DP Creator Studio V4 - 14 Immersive Visual Scene Presets, Frame Studio & Atmospheric Overlays
+ * 8 Modular Frame Styles, Custom Frame Colors, Film Grain & Vignette Overlays
  */
 
 export class BackgroundRenderer {
   constructor() {
-    this.noiseCache = null;
+    this.noiseCanvas = null;
+  }
+
+  getNoisePattern(ctx) {
+    if (!this.noiseCanvas) {
+      const nc = document.createElement('canvas');
+      nc.width = 120;
+      nc.height = 120;
+      const nctx = nc.getContext('2d');
+      const img = nctx.createImageData(120, 120);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.floor(Math.random() * 255);
+        img.data[i] = v;
+        img.data[i + 1] = v;
+        img.data[i + 2] = v;
+        img.data[i + 3] = 18; // Very subtle noise
+      }
+      nctx.putImageData(img, 0, 0);
+      this.noiseCanvas = nc;
+    }
+    return ctx.createPattern(this.noiseCanvas, 'repeat');
   }
 
   draw(ctx, W, H, time, sceneId, palette, frameConfig = {}) {
@@ -58,9 +78,40 @@ export class BackgroundRenderer {
         break;
     }
 
+    // Render Atmospheric Overlays
+    if (frameConfig.vignette) {
+      this.renderVignette(ctx, W, H);
+    }
+    if (frameConfig.filmGrain) {
+      this.renderFilmGrain(ctx, W, H);
+    }
+
     // Render Frame Studio Layer
     this.drawFrame(ctx, W, H, time, palette, frameConfig);
 
+    ctx.restore();
+  }
+
+  // Atmospheric Vignette Overlay
+  renderVignette(ctx, W, H) {
+    ctx.save();
+    const g = ctx.createRadialGradient(W * 0.5, H * 0.5, W * 0.25, W * 0.5, H * 0.5, W * 0.72);
+    g.addColorStop(0, 'transparent');
+    g.addColorStop(0.7, 'rgba(0, 0, 0, 0.25)');
+    g.addColorStop(1, 'rgba(0, 0, 0, 0.65)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  // Atmospheric Film Grain Overlay
+  renderFilmGrain(ctx, W, H) {
+    ctx.save();
+    const pat = this.getNoisePattern(ctx);
+    if (pat) {
+      ctx.fillStyle = pat;
+      ctx.fillRect(0, 0, W, H);
+    }
     ctx.restore();
   }
 
@@ -78,12 +129,10 @@ export class BackgroundRenderer {
     switch (style) {
       case 'corners': {
         const arm = 26;
-        // Subtle outer boundary
         ctx.strokeStyle = color + '30';
         ctx.lineWidth = 1;
         ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
 
-        // Bold corner brackets
         ctx.strokeStyle = color;
         ctx.lineWidth = strokeW + 1;
         ctx.lineCap = 'round';
@@ -116,14 +165,12 @@ export class BackgroundRenderer {
       }
 
       case 'double': {
-        // Outer line
         ctx.strokeStyle = color + '90';
         ctx.lineWidth = strokeW;
         ctx.beginPath();
         ctx.roundRect(pad, pad, W - pad * 2, H - pad * 2, 14);
         ctx.stroke();
 
-        // Inner line
         ctx.strokeStyle = color + '45';
         ctx.lineWidth = Math.max(1, strokeW * 0.65);
         ctx.beginPath();
@@ -151,7 +198,6 @@ export class BackgroundRenderer {
         ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
         ctx.strokeRect(pad + 6, pad + 6, W - (pad + 6) * 2, H - (pad + 6) * 2);
 
-        // Corner Flourishes
         const drawFlourish = (x, y, rot) => {
           ctx.save();
           ctx.translate(x, y);
