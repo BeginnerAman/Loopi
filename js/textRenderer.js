@@ -1,6 +1,6 @@
 /**
  * DP Creator Studio V4 - Advanced Typography & Hyper-Realistic Animation Engine
- * 14 Animation Styles with Physics-Driven Easing (Damped Springs, Elastic Overshoot, Focus Pulls),
+ * 18 Animation Styles with Physics-Driven Easing (Damped Springs, Elastic Jelly, 3D Flip, Cyber Glitch, Shimmer Sweep),
  * 3-Phase Lifecycle (Intro -> Hold -> Outro), Stroke/Outline, Multi-line wrapping,
  * Dynamic Rainbow/Gradient fill, and Animated Emoji Hop Burst.
  */
@@ -59,7 +59,7 @@ export class TextRenderer {
   }
 
   draw(ctx, W, H, time, elapsed, config, palette, timing) {
-    const rawText = config.text || 'Hello Ji...😊';
+    const rawText = config.text || 'Hello, Aman Here...✨';
     const fs = config.fontSize || 50;
     const fontName = config.font || 'Outfit';
     const fontWeight = config.fontWeight || '600';
@@ -116,18 +116,22 @@ export class TextRenderer {
     // Animation variables with physics
     let visibleTokenCount = totalChars;
     let animAlpha = 1;
-    let animScale = 1;
+    let animScaleX = 1;
+    let animScaleY = 1;
     let animOffsetX = 0;
     let animOffsetY = 0;
     let isTypingActive = false;
     let emojiBurst = 0;
     let customLetterRender = null;
     let penTipPosition = null;
+    let isGlitching = false;
+    let isShimmering = false;
 
     if (phase === 'out') {
       const outEase = phaseProgress * phaseProgress;
       animAlpha = Math.max(0, 1 - outEase);
-      animScale = 1 - outEase * 0.08;
+      animScaleX = 1 - outEase * 0.08;
+      animScaleY = 1 - outEase * 0.08;
       if (animMode === 'slide_up') animOffsetY = -outEase * 40;
       else if (animMode === 'slide_down') animOffsetY = outEase * 40;
       else if (animMode === 'slide_left') animOffsetX = -outEase * 60;
@@ -136,7 +140,6 @@ export class TextRenderer {
       switch (animMode) {
         case 'type': {
           if (phase === 'in') {
-            // Human-like typing cadence
             const typedCount = Math.min(totalChars, Math.max(1, Math.floor(phaseProgress * totalChars)));
             visibleTokenCount = typedCount;
             isTypingActive = visibleTokenCount < totalChars;
@@ -152,7 +155,6 @@ export class TextRenderer {
         }
         case 'fade': {
           if (phase === 'in') {
-            // Silky Quartic ease
             const ease = 1 - Math.pow(1 - phaseProgress, 4);
             animAlpha = ease;
             animOffsetY = (1 - ease) * 16;
@@ -161,19 +163,67 @@ export class TextRenderer {
         }
         case 'pop': {
           if (phase === 'in') {
-            // Damped harmonic spring oscillation (Real physics bounce)
             const p = phaseProgress;
-            animScale = p === 0 ? 0 : p === 1 ? 1 : 1 - Math.exp(-6 * p) * Math.cos(10 * p);
+            const s = p === 0 ? 0 : p === 1 ? 1 : 1 - Math.exp(-6 * p) * Math.cos(10 * p);
+            animScaleX = s;
+            animScaleY = s;
             animAlpha = Math.min(1, p * 3);
+          }
+          break;
+        }
+        case 'elastic_blob': {
+          if (phase === 'in') {
+            const p = phaseProgress;
+            const stretch = Math.sin(p * Math.PI) * 0.35;
+            const spring = 1 - Math.exp(-7 * p) * Math.cos(8 * p);
+            animScaleX = spring + stretch;
+            animScaleY = spring - stretch * 0.6;
+            animAlpha = Math.min(1, p * 2.8);
+          }
+          break;
+        }
+        case 'glitch': {
+          if (phase === 'in') {
+            if (phaseProgress < 0.6) {
+              isGlitching = true;
+              animOffsetX = (Math.random() - 0.5) * 14 * (1 - phaseProgress);
+              animOffsetY = (Math.random() - 0.5) * 6 * (1 - phaseProgress);
+              animAlpha = 0.5 + Math.random() * 0.5;
+            } else {
+              animAlpha = 1;
+            }
+          } else {
+            // Micro glitch spike during hold
+            if (Math.random() < 0.04) {
+              isGlitching = true;
+              animOffsetX = (Math.random() - 0.5) * 8;
+            }
+          }
+          break;
+        }
+        case 'shimmer': {
+          isShimmering = true;
+          if (phase === 'in') {
+            animAlpha = 1 - Math.pow(1 - phaseProgress, 3);
+            animOffsetY = (1 - animAlpha) * 15;
+          }
+          break;
+        }
+        case 'flip_3d': {
+          if (phase === 'in') {
+            const ease = 1 - Math.pow(1 - phaseProgress, 3);
+            animScaleY = Math.max(0.05, ease);
+            animOffsetY = (1 - ease) * -40;
+            animAlpha = Math.min(1, phaseProgress * 2.5);
           }
           break;
         }
         case 'slide_up': {
           if (phase === 'in') {
-            // Elastic Quartic ease with subtle overshoot
             const ease = 1 - Math.pow(1 - phaseProgress, 3.5);
             animOffsetY = (1 - ease) * 70;
-            animScale = 0.96 + 0.04 * ease;
+            animScaleX = 0.96 + 0.04 * ease;
+            animScaleY = 0.96 + 0.04 * ease;
             animAlpha = Math.min(1, phaseProgress * 2.2);
           }
           break;
@@ -182,7 +232,8 @@ export class TextRenderer {
           if (phase === 'in') {
             const ease = 1 - Math.pow(1 - phaseProgress, 3.5);
             animOffsetY = (ease - 1) * 70;
-            animScale = 0.96 + 0.04 * ease;
+            animScaleX = 0.96 + 0.04 * ease;
+            animScaleY = 0.96 + 0.04 * ease;
             animAlpha = Math.min(1, phaseProgress * 2.2);
           }
           break;
@@ -205,13 +256,15 @@ export class TextRenderer {
         }
         case 'zoom_in': {
           if (phase === 'in') {
-            // Optical cinematic depth zoom
             const ease = 1 - Math.pow(1 - phaseProgress, 3);
-            animScale = 0.35 + 0.65 * ease;
+            const z = 0.35 + 0.65 * ease;
+            animScaleX = z;
+            animScaleY = z;
             animAlpha = Math.min(1, phaseProgress * 2.5);
           } else {
-            // Subtle breathing oscillation during hold
-            animScale = 1 + Math.sin(phaseProgress * Math.PI) * 0.025;
+            const z = 1 + Math.sin(phaseProgress * Math.PI) * 0.025;
+            animScaleX = z;
+            animScaleY = z;
           }
           break;
         }
@@ -233,10 +286,11 @@ export class TextRenderer {
         }
         case 'cinematic': {
           if (phase === 'in') {
-            // Focus pull & letter tracking expansion
             const ease = 1 - Math.pow(1 - phaseProgress, 2.5);
             animAlpha = ease;
-            animScale = 1.04 - (1 - ease) * 0.04;
+            const sc = 1.04 - (1 - ease) * 0.04;
+            animScaleX = sc;
+            animScaleY = sc;
           }
           break;
         }
@@ -250,7 +304,6 @@ export class TextRenderer {
         }
         case 'neon': {
           if (phase === 'in') {
-            // Realistic multi-strike neon ionization flicker
             let flicker = 1;
             if (phaseProgress < 0.12) flicker = Math.random() > 0.4 ? 1 : 0.08;
             else if (phaseProgress < 0.28) flicker = 0.15;
@@ -258,7 +311,6 @@ export class TextRenderer {
             else flicker = 0.75 + 0.25 * phaseProgress;
             animAlpha = flicker;
           } else {
-            // Organic AC transformer hum
             animAlpha = 0.95 + 0.05 * Math.sin(time * 0.04);
           }
           break;
@@ -297,12 +349,24 @@ export class TextRenderer {
     // Apply global transforms
     ctx.translate(targetCenterX + animOffsetX, targetCenterY + animOffsetY);
     ctx.rotate(rotation);
-    ctx.scale(scale * animScale, scale * animScale);
+    ctx.scale(scale * animScaleX, scale * animScaleY);
     ctx.globalAlpha = textOpacity * animAlpha;
 
     // Configure text fill style
     let fillStyle = textColor;
-    if (textMode === 'gradient') {
+    if (isShimmering) {
+      const g = ctx.createLinearGradient(-maxWidth / 2, 0, maxWidth / 2, 0);
+      const sweep = ((time * 0.001) % 2) - 0.5;
+      const p1 = Math.max(0, Math.min(1, sweep - 0.2));
+      const p2 = Math.max(0, Math.min(1, sweep));
+      const p3 = Math.max(0, Math.min(1, sweep + 0.2));
+      g.addColorStop(0, textColor);
+      g.addColorStop(p1, textColor);
+      g.addColorStop(p2, '#ffffff');
+      g.addColorStop(p3, textColor);
+      g.addColorStop(1, textColor);
+      fillStyle = g;
+    } else if (textMode === 'gradient') {
       const g = ctx.createLinearGradient(-maxWidth / 2, 0, maxWidth / 2, 0);
       g.addColorStop(0, config.gradientStart || palette.primary);
       g.addColorStop(1, config.gradientEnd || palette.accent);
@@ -351,7 +415,6 @@ export class TextRenderer {
         );
       }
     } else if (customLetterRender === 'cascade') {
-      // Real letter cascade with physics spring drop
       let globalCharIdx = 0;
       for (let lIdx = 0; lIdx < lines.length; lIdx++) {
         const line = lines[lIdx];
@@ -383,7 +446,6 @@ export class TextRenderer {
           if (phase === 'in') {
             const startDelay = (globalCharIdx / Math.max(1, totalChars)) * 0.65;
             const lp = Math.max(0, Math.min(1, (phaseProgress - startDelay) / 0.35));
-            // Physics spring bounce equation
             const springEase = 1 - Math.exp(-6 * lp) * Math.cos(9 * lp);
             charDropY = (1 - Math.min(1, lp * 1.5)) * -80;
             charSpringScale = 0.5 + 0.5 * springEase;
@@ -417,13 +479,26 @@ export class TextRenderer {
         }
       }
     } else {
-      // Standard line-by-line render with emoji hop
+      // Standard line-by-line render with glitch and emoji hop
       for (let lIdx = 0; lIdx < lines.length; lIdx++) {
         const line = lines[lIdx];
         const curY = startY + lIdx * lh;
         let lineX = 0;
         if (align === 'left') lineX = -maxWidth / 2;
         else if (align === 'right') lineX = maxWidth / 2;
+
+        if (isGlitching) {
+          // Cyber Chromatic Aberration Red/Cyan split
+          ctx.save();
+          ctx.shadowColor = '#00f5ff';
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = '#00f5ff';
+          ctx.fillText(line, lineX - 3, curY);
+          ctx.shadowColor = '#ff0077';
+          ctx.fillStyle = '#ff0077';
+          ctx.fillText(line, lineX + 3, curY);
+          ctx.restore();
+        }
 
         ctx.save();
         if (shadowBlur > 0 || shadowOffset > 0) {

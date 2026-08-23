@@ -3,22 +3,22 @@
  * Clean UI Lucide icon mappings, Quick Emojis, and Universal Presets
  */
 
-export const DEFAULT_TEXT = 'Hello Ji...😊';
+export const DEFAULT_TEXT = 'Hello, Aman Here...✨';
 
 export const QUICK_EMOJIS = [
-  '😊', '✨', '🌸', '🌙', '💖', '☀️', '👀', '☕', '🦋', '🕊️', '❄️', '🔥', '💫', '🌹', '🤍', '🎉', '⚡', '🖤'
+  '✨', '😊', '🌸', '🌙', '💖', '☀️', '👀', '☕', '🦋', '🕊️', '❄️', '🔥', '💫', '🌹', '🤍', '🎉', '⚡', '🖤'
 ];
 
 export const MESSAGE_PRESETS = [
   {
-    category: 'Cute & Friendly',
+    category: 'Signature & Intro',
     items: [
-      'Hello Ji...😊',
+      'Hello, Aman Here...✨',
+      'Aman Here 🌿',
+      'Aman\'s Motion DP ✦',
       'Suniye na ✨',
       'Smile please 😊',
-      'Arey Ji... 👋',
-      'Kaise hain aap? 🌿',
-      'Aur batao Ji... ☕'
+      'Hello Ji...😊'
     ]
   },
   {
@@ -88,6 +88,30 @@ export const SCENES = [
     frameStyle: 'corners',
     doodles: ['spark', 'stars'],
     bgType: 'aurora'
+  },
+  {
+    id: 'nebula',
+    name: 'Cosmic Nebula',
+    icon: 'sparkles',
+    desc: 'Deep galactic nebula clouds with stellar violet & cyan dust',
+    paletteIndex: 0,
+    font: 'Outfit',
+    anim: 'shimmer',
+    frameStyle: 'neon',
+    doodles: ['stars', 'orbit'],
+    bgType: 'nebula'
+  },
+  {
+    id: 'golden',
+    name: 'Royal Gold Velvet',
+    icon: 'sparkle',
+    desc: 'Deep obsidian luxury with floating liquid gold embers',
+    paletteIndex: 10,
+    font: 'Cinzel',
+    anim: 'flip_3d',
+    frameStyle: 'double',
+    doodles: ['twinkle', 'spark'],
+    bgType: 'golden'
   },
   {
     id: 'moonlight',
@@ -393,6 +417,10 @@ export const ANIMATIONS = [
   { id: 'type', name: 'Typewriter', icon: 'keyboard', desc: 'Natural char-by-char with glowing cursor & emoji hop' },
   { id: 'fade', name: 'Soft Fade', icon: 'sun', desc: 'Silky smooth opacity reveal' },
   { id: 'pop', name: 'Pop Bounce', icon: 'maximize-2', desc: 'Elastic spring physics bounce' },
+  { id: 'elastic_blob', name: 'Elastic Jelly', icon: 'sparkles', desc: 'Organic jelly tension stretch & settle' },
+  { id: 'glitch', name: 'Cyber Glitch', icon: 'zap', desc: 'Holographic chromatic aberration laser snap' },
+  { id: 'shimmer', name: 'Shimmer Sweep', icon: 'sparkle', desc: 'Radiant metallic light beam sweep' },
+  { id: 'flip_3d', name: '3D Flip', icon: 'layers', desc: 'Luxury kinetic 3D perspective unfold' },
   { id: 'slide_up', name: 'Slide Up', icon: 'arrow-up', desc: 'Smooth upward glide with overshoot settling' },
   { id: 'slide_down', name: 'Slide Down', icon: 'arrow-down', desc: 'Gentle downward drop with overshoot settling' },
   { id: 'slide_left', name: 'Slide Left', icon: 'arrow-left', desc: 'Lateral entrance from right' },

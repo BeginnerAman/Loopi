@@ -1,5 +1,5 @@
 /**
- * DP Creator Studio V4 - 14 Immersive Visual Scene Presets, Frame Studio & Atmospheric Overlays
+ * DP Creator Studio V4 - 16 Immersive Visual Scene Presets, Frame Studio & Atmospheric Overlays
  * 8 Modular Frame Styles, Custom Frame Colors, Film Grain & Vignette Overlays
  */
 
@@ -33,6 +33,12 @@ export class BackgroundRenderer {
     switch (sceneId) {
       case 'aurora':
         this.renderAurora(ctx, W, H, time, palette);
+        break;
+      case 'nebula':
+        this.renderNebula(ctx, W, H, time, palette);
+        break;
+      case 'golden':
+        this.renderGoldenLuxury(ctx, W, H, time, palette);
         break;
       case 'moonlight':
         this.renderMoonlight(ctx, W, H, time, palette);
@@ -283,7 +289,75 @@ export class BackgroundRenderer {
     });
   }
 
-  // 2. 🌙 Moonlight
+  // 2. 🌌 Cosmic Nebula (NEW)
+  renderNebula(ctx, W, H, time, palette) {
+    const bg = ctx.createRadialGradient(W * 0.5, H * 0.5, 50, W * 0.5, H * 0.5, W * 0.85);
+    bg.addColorStop(0, '#120a2a');
+    bg.addColorStop(0.5, '#080415');
+    bg.addColorStop(1, '#030208');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.save();
+    // Swirling nebula clouds
+    for (let i = 0; i < 3; i++) {
+      const ang = time * 0.0003 + i * 2.1;
+      const nx = W * (0.5 + 0.25 * Math.sin(ang));
+      const ny = H * (0.5 + 0.25 * Math.cos(ang));
+      const r = 240 + Math.sin(time * 0.001 + i) * 40;
+
+      const ng = ctx.createRadialGradient(nx, ny, 20, nx, ny, r);
+      if (i === 0) {
+        ng.addColorStop(0, '#a855f735');
+        ng.addColorStop(0.6, '#6366f115');
+      } else if (i === 1) {
+        ng.addColorStop(0, '#06b6d430');
+        ng.addColorStop(0.6, '#3b82f612');
+      } else {
+        ng.addColorStop(0, '#ec489925');
+        ng.addColorStop(0.6, '#8b5cf610');
+      }
+      ng.addColorStop(1, 'transparent');
+
+      ctx.fillStyle = ng;
+      ctx.beginPath();
+      ctx.arc(nx, ny, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // 3. 👑 Royal Gold Velvet (NEW)
+  renderGoldenLuxury(ctx, W, H, time, palette) {
+    const bg = ctx.createRadialGradient(W * 0.5, H * 0.4, 20, W * 0.5, H * 0.5, W * 0.8);
+    bg.addColorStop(0, '#1f1604');
+    bg.addColorStop(0.5, '#0d0a02');
+    bg.addColorStop(1, '#050401');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.save();
+    // Liquid gold caustics
+    for (let i = 0; i < 4; i++) {
+      const ang = time * 0.0004 + i * 1.57;
+      const gx = W * (0.5 + 0.3 * Math.sin(ang));
+      const gy = H * (0.5 + 0.25 * Math.cos(ang));
+      const r = 180 + Math.sin(time * 0.0015 + i) * 30;
+
+      const gg = ctx.createRadialGradient(gx, gy, 10, gx, gy, r);
+      gg.addColorStop(0, '#fcd34d28');
+      gg.addColorStop(0.5, '#b4530910');
+      gg.addColorStop(1, 'transparent');
+
+      ctx.fillStyle = gg;
+      ctx.beginPath();
+      ctx.arc(gx, gy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // 4. 🌙 Moonlight
   renderMoonlight(ctx, W, H, time, palette) {
     const g = ctx.createRadialGradient(W * 0.75, H * 0.22, 20, W * 0.5, H * 0.6, W * 0.8);
     g.addColorStop(0, '#1b2a4a');
@@ -321,7 +395,7 @@ export class BackgroundRenderer {
     ctx.fill();
   }
 
-  // 3. 🌧️ Rainy Window
+  // 5. 🌧️ Rainy Window
   renderRainyWindow(ctx, W, H, time, palette) {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#151b28');
@@ -351,7 +425,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 4. ☁️ Cloudy Dream
+  // 6. ☁️ Cloudy Dream
   renderCloudy(ctx, W, H, time, palette) {
     const g = ctx.createLinearGradient(0, 0, W, H);
     g.addColorStop(0, '#241b3a');
@@ -379,7 +453,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 5. ✨ Dreamy Bokeh
+  // 7. ✨ Dreamy Bokeh
   renderDreamy(ctx, W, H, time, palette) {
     const g = ctx.createRadialGradient(W * 0.4, H * 0.35, 10, W * 0.5, H * 0.5, W * 0.8);
     g.addColorStop(0, palette.secondary + '44');
@@ -408,7 +482,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 6. 🌸 Soft Sakura
+  // 8. 🌸 Soft Sakura
   renderSakura(ctx, W, H, time, palette) {
     const g = ctx.createRadialGradient(W * 0.5, H * 0.3, 20, W * 0.5, H * 0.6, W * 0.8);
     g.addColorStop(0, '#2f1522');
@@ -424,7 +498,7 @@ export class BackgroundRenderer {
     ctx.fillRect(0, 0, W, H);
   }
 
-  // 7. 📜 Warm Paper
+  // 9. 📜 Warm Paper
   renderPaper(ctx, W, H, time, palette) {
     const g = ctx.createLinearGradient(0, 0, W, H);
     g.addColorStop(0, '#1c150e');
@@ -434,7 +508,7 @@ export class BackgroundRenderer {
     ctx.fillRect(0, 0, W, H);
   }
 
-  // 8. 🪩 Glassmorphism
+  // 10. 🪩 Glassmorphism
   renderGlass(ctx, W, H, time, palette) {
     const g = ctx.createLinearGradient(0, 0, W, H);
     g.addColorStop(0, '#060f1e');
@@ -475,7 +549,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 9. 🌊 Ocean Deep
+  // 11. 🌊 Ocean Deep
   renderOcean(ctx, W, H, time, palette) {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#042738');
@@ -500,7 +574,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 10. 🌃 City Night
+  // 12. 🌃 City Night
   renderCity(ctx, W, H, time, palette) {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#090814');
@@ -524,7 +598,7 @@ export class BackgroundRenderer {
     }
   }
 
-  // 11. 🌿 Emerald Forest
+  // 13. 🌿 Emerald Forest
   renderNature(ctx, W, H, time, palette) {
     const g = ctx.createRadialGradient(W * 0.5, H * 0.25, 20, W * 0.5, H * 0.6, W * 0.8);
     g.addColorStop(0, '#0a2f1c');
@@ -549,7 +623,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 12. 🖤 Minimal
+  // 14. 🖤 Minimal
   renderMinimal(ctx, W, H, time, palette) {
     ctx.fillStyle = '#08090d';
     ctx.fillRect(0, 0, W, H);
@@ -573,7 +647,7 @@ export class BackgroundRenderer {
     ctx.restore();
   }
 
-  // 13. 💜 Purple Glow
+  // 15. 💜 Purple Glow
   renderPurpleGlow(ctx, W, H, time, palette) {
     const g = ctx.createRadialGradient(W * 0.5, H * 0.35, 10, W * 0.5, H * 0.65, W * 0.8);
     g.addColorStop(0, '#2e1454');
@@ -583,7 +657,7 @@ export class BackgroundRenderer {
     ctx.fillRect(0, 0, W, H);
   }
 
-  // 14. 🎞️ Cinematic Flare
+  // 16. 🎞️ Cinematic Flare
   renderCinematic(ctx, W, H, time, palette) {
     ctx.fillStyle = '#06070a';
     ctx.fillRect(0, 0, W, H);

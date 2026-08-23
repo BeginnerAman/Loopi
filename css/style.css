@@ -398,10 +398,11 @@ body {
 
 .quickEmojiBar {
   display: flex;
-  gap: 6px;
+  gap: 7px;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding: 4px 2px 8px;
   scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 
 .quickEmojiBar::-webkit-scrollbar {
@@ -416,21 +417,30 @@ body {
 .quickEmojiBtn {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 16px;
-  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 17px;
+  line-height: 1;
+  padding: 7px 10px;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  min-width: 38px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
 }
 
 .quickEmojiBtn:hover {
   border-color: var(--accent);
-  transform: scale(1.15);
+  background: var(--panel-sub);
 }
 
 .quickEmojiBtn:active {
-  transform: scale(0.95);
+  background: rgba(170, 145, 255, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* Atmospheric Section */
