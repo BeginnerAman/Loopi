@@ -1,6 +1,6 @@
 /*
  * DP Creator Studio V4 - Mobile-First Glassmorphism Design System
- * 60fps Smooth UI, Dark Velvet Aesthetics, Touch-Optimized
+ * Lucide Icons Integration, 60fps Smooth UI, Dark Velvet Aesthetics, Touch-Optimized
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;800&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap');
@@ -9,7 +9,7 @@
   --bg: #07080d;
   --bg-surface: #0d0f17;
   --panel: #12141f;
-  --panel-glass: rgba(18, 20, 31, 0.82);
+  --panel-glass: rgba(18, 20, 31, 0.85);
   --panel-sub: #181b28;
   --border: #222638;
   --border-glow: #8e79e740;
@@ -22,7 +22,7 @@
   --success: #4ade80;
   --radius-lg: 20px;
   --radius-md: 14px;
-  --radius-sm: 9px;
+  --radius-sm: 10px;
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 10px 30px rgba(138, 107, 255, 0.25);
 }
@@ -44,11 +44,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Lucide Icons Base Styling */
+.lucide {
+  width: 17px;
+  height: 17px;
+  stroke-width: 2px;
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 /* App Container */
 .app {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 14px 40px;
+  padding: 14px 12px 40px;
 }
 
 /* Header & Brand */
@@ -56,32 +66,37 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .brandLogo {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-md);
   background: var(--accent-gradient);
   display: grid;
   place-items: center;
   color: #100b24;
-  font-size: 22px;
-  font-weight: 900;
   box-shadow: var(--shadow-glow);
   flex-shrink: 0;
 }
 
+.brandLogo .lucide {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.5px;
+}
+
 .brandInfo h1 {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, #ffffff, #dcd4ff);
@@ -90,20 +105,21 @@ body {
 }
 
 .brandInfo p {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-muted);
 }
 
 .topActions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .topActionBtn {
   background: var(--panel-sub);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 9px 14px;
+  padding: 8px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
@@ -113,6 +129,12 @@ body {
   gap: 6px;
   transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  min-height: 38px;
+}
+
+.topActionBtn .lucide {
+  width: 15px;
+  height: 15px;
 }
 
 .topActionBtn:hover {
@@ -130,8 +152,8 @@ body {
 /* Master Grid Layout */
 .studioGrid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 20px;
+  grid-template-columns: 1.12fr 0.88fr;
+  gap: 18px;
   align-items: start;
 }
 
@@ -142,7 +164,7 @@ body {
   background: var(--panel-glass);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 14px;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: var(--shadow-lg);
@@ -152,11 +174,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  gap: 6px;
 }
 
 .previewTitle {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -168,8 +191,8 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   padding: 3px;
-  border-radius: 10px;
-  gap: 3px;
+  border-radius: 9px;
+  gap: 2px;
 }
 
 .previewModeBtn {
@@ -178,10 +201,11 @@ body {
   color: var(--text-muted);
   font-size: 11px;
   font-weight: 600;
-  padding: 5px 9px;
+  padding: 5px 8px;
   border-radius: 7px;
   cursor: pointer;
   transition: all 0.18s ease;
+  white-space: nowrap;
 }
 
 .previewModeBtn.active {
@@ -195,7 +219,7 @@ body {
   position: relative;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 22px;
+  border-radius: 20px;
   overflow: hidden;
   background: #000000;
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
@@ -225,7 +249,7 @@ body {
 .telegramCircleMask::after {
   content: 'Telegram / WhatsApp DP Safe Zone';
   position: absolute;
-  bottom: 20px;
+  bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.75);
@@ -239,7 +263,7 @@ body {
 
 /* Timeline Bar Component */
 .timelineComponent {
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .timelineControls {
@@ -259,7 +283,11 @@ body {
   cursor: pointer;
   display: grid;
   place-items: center;
-  font-size: 12px;
+}
+
+.timelinePlayBtn .lucide {
+  width: 14px;
+  height: 14px;
 }
 
 .timelineTime {
@@ -293,7 +321,7 @@ body {
 /* Controls Column & Accordions */
 .controlsColumn {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .accordionItem {
@@ -315,7 +343,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 13px 15px;
   cursor: pointer;
   user-select: none;
   font-weight: 700;
@@ -335,8 +363,13 @@ body {
   gap: 9px;
 }
 
+.accordionHeaderIcon .lucide {
+  color: var(--accent);
+  width: 17px;
+  height: 17px;
+}
+
 .accordionArrow {
-  font-size: 10px;
   color: var(--text-muted);
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -347,13 +380,38 @@ body {
 
 .accordionBody {
   display: none;
-  padding: 0 16px 16px;
+  padding: 0 14px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .accordionItem.open .accordionBody {
   display: block;
-  padding-top: 14px;
+  padding-top: 12px;
+}
+
+/* Frame Studio Section */
+.frameStudioSection {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.frameStudioTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.frameStudioTitle .lucide {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
 }
 
 /* Form Controls & Inputs */
@@ -363,17 +421,18 @@ body {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .textInputArea {
   width: 100%;
-  min-height: 85px;
+  min-height: 80px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-main);
-  padding: 12px;
+  padding: 11px;
   font-family: inherit;
   font-size: 14px;
   resize: vertical;
@@ -393,10 +452,11 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-main);
-  padding: 10px 12px;
+  padding: 9px 11px;
   font-size: 13px;
   outline: none;
   cursor: pointer;
+  min-height: 38px;
 }
 
 .formSelect:focus {
@@ -406,7 +466,7 @@ body {
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 9px;
 }
 
 .grid3 {
@@ -416,14 +476,14 @@ body {
 }
 
 .controlRow {
-  margin-bottom: 12px;
+  margin-bottom: 11px;
 }
 
 /* Range Sliders */
 .rangeGroup {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
 }
 
 .rangeInput {
@@ -437,7 +497,7 @@ body {
   font-size: 11px;
   color: var(--text-muted);
   font-family: monospace;
-  min-width: 42px;
+  min-width: 38px;
   text-align: right;
 }
 
@@ -445,11 +505,11 @@ body {
 .checkboxLabel {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   font-size: 12px;
   color: var(--text-main);
   cursor: pointer;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .checkboxLabel input {
@@ -460,7 +520,7 @@ body {
 
 /* Preset Chips */
 .presetGroup {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .presetCategoryTitle {
@@ -468,7 +528,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text-sub);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   letter-spacing: 0.08em;
 }
 
@@ -482,7 +542,7 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 7px 11px;
+  padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
   cursor: pointer;
@@ -505,7 +565,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  max-height: 280px;
+  max-height: 270px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -514,12 +574,12 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px;
+  padding: 9px 10px;
   text-align: left;
   cursor: pointer;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 9px;
   transition: all 0.18s ease;
 }
 
@@ -534,8 +594,15 @@ body {
 }
 
 .sceneIcon {
-  font-size: 20px;
   flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
+
+.sceneIcon .lucide {
+  width: 19px;
+  height: 19px;
 }
 
 .sceneMeta b {
@@ -549,7 +616,7 @@ body {
   font-size: 10px;
   color: var(--text-muted);
   line-height: 1.25;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 /* Palettes Grid */
@@ -563,7 +630,7 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 8px;
+  padding: 7px;
   cursor: pointer;
   text-align: center;
   transition: all 0.18s ease;
@@ -577,10 +644,10 @@ body {
 .paletteSwatches {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  height: 20px;
-  border-radius: 6px;
+  height: 18px;
+  border-radius: 5px;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .paletteSwatches span {
@@ -592,6 +659,9 @@ body {
   font-size: 10px;
   font-weight: 600;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Color Studio Pickers */
@@ -601,9 +671,9 @@ body {
   justify-content: space-between;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
-  margin-bottom: 8px;
+  min-height: 38px;
 }
 
 .colorPickerRow span {
@@ -614,9 +684,9 @@ body {
 .colorSwatchInput {
   -webkit-appearance: none;
   border: none;
-  width: 32px;
-  height: 26px;
-  border-radius: 6px;
+  width: 30px;
+  height: 24px;
+  border-radius: 5px;
   cursor: pointer;
   background: transparent;
 }
@@ -627,21 +697,21 @@ body {
 
 .colorSwatchInput::-webkit-color-swatch {
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 /* Doodles Chips Grid */
 .doodlesGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
 }
 
 .doodleChip {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 8px 12px;
+  padding: 7px 11px;
   border-radius: var(--radius-sm);
   font-size: 12px;
   cursor: pointer;
@@ -649,6 +719,11 @@ body {
   align-items: center;
   gap: 6px;
   transition: all 0.15s ease;
+}
+
+.doodleChip .lucide {
+  width: 14px;
+  height: 14px;
 }
 
 .doodleChip.active {
@@ -663,7 +738,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  max-height: 260px;
+  max-height: 250px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -672,12 +747,12 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 9px;
+  padding: 8px 10px;
   text-align: left;
   cursor: pointer;
   display: flex;
   align-items: flex-start;
-  gap: 9px;
+  gap: 8px;
   transition: all 0.18s ease;
 }
 
@@ -688,7 +763,15 @@ body {
 }
 
 .animIcon {
-  font-size: 18px;
+  color: var(--accent);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.animIcon .lucide {
+  width: 17px;
+  height: 17px;
 }
 
 .animMeta b {
@@ -707,7 +790,7 @@ body {
 .exportButtons {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 9px;
+  gap: 8px;
   margin-top: 10px;
 }
 
@@ -716,16 +799,21 @@ body {
   background: var(--panel-sub);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 13px 8px;
+  padding: 11px 6px;
   border-radius: var(--radius-sm);
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11.5px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   transition: all 0.18s ease;
+}
+
+.btnExport .lucide {
+  width: 17px;
+  height: 17px;
 }
 
 .btnExport.primary {
@@ -766,26 +854,26 @@ body {
 .exportModalCard {
   background: var(--panel);
   border: 1px solid var(--border-glow);
-  padding: 24px;
+  padding: 22px;
   border-radius: var(--radius-lg);
-  width: min(90vw, 380px);
+  width: min(90vw, 360px);
   text-align: center;
   box-shadow: var(--shadow-lg);
 }
 
 .exportModalCard h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 15px;
+  margin-bottom: 6px;
 }
 
 .exportModalCard p {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-muted);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .exportProgressBar {
-  height: 10px;
+  height: 9px;
   background: var(--bg-surface);
   border-radius: 999px;
   overflow: hidden;
@@ -802,15 +890,15 @@ body {
 /* Toast Notifications */
 .toast {
   position: fixed;
-  bottom: 24px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
   background: var(--panel-sub);
   border: 1px solid var(--accent);
   color: var(--text-main);
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   box-shadow: var(--shadow-glow);
   transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
@@ -822,7 +910,7 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Mobile Responsiveness & Polish */
+/* Mobile Responsiveness & Layout Fixes */
 @media (max-width: 860px) {
   .studioGrid {
     grid-template-columns: 1fr;
@@ -830,15 +918,69 @@ body {
   .previewStage {
     position: relative;
     top: 0;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    padding: 12px;
   }
   .topNav {
-    flex-wrap: wrap;
+    flex-direction: row;
+  }
+  .palettesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 10px 8px 32px;
   }
   .brandInfo h1 {
-    font-size: 16px;
+    font-size: 15px;
+  }
+  .topActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .topActionBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  .grid2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  .grid3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
   }
   .palettesGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .scenesGrid {
+    grid-template-columns: 1fr;
+  }
+  .animGrid {
+    grid-template-columns: 1fr;
+  }
+  .exportButtons {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .btnExport {
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px;
+  }
+  .btnExport .lucide {
+    margin-bottom: 0;
+    margin-right: 4px;
+  }
+  .accordionHeader {
+    padding: 12px;
+    font-size: 12.5px;
+  }
+  .accordionBody {
+    padding: 0 12px 12px;
   }
 }

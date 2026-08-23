@@ -1,5 +1,6 @@
 /**
  * DP Creator Studio V4 - Constants & Presets
+ * Clean UI Lucide icon mappings and universal presets
  */
 
 export const DEFAULT_TEXT = 'Hello Ji...😊';
@@ -64,21 +65,21 @@ export const MESSAGE_PRESETS = [
 ];
 
 export const FRAME_STYLES = [
-  { id: 'corners', name: 'Modern Corners', icon: '⌜⌟' },
-  { id: 'box', name: 'Classic Rectangle', icon: '◻' },
-  { id: 'double', name: 'Double Border', icon: '回' },
-  { id: 'neon', name: 'Neon Glow Border', icon: '⚡' },
-  { id: 'vintage', name: 'Vintage Stationery', icon: '📜' },
-  { id: 'dotted', name: 'Dotted Tech', icon: '⬚' },
-  { id: 'gradient', name: 'Gradient Aura', icon: '🌈' },
-  { id: 'none', name: 'None (No Frame)', icon: '🚫' }
+  { id: 'corners', name: 'Modern Corners', icon: 'corner-up-left' },
+  { id: 'box', name: 'Classic Rectangle', icon: 'square' },
+  { id: 'double', name: 'Double Border', icon: 'copy' },
+  { id: 'neon', name: 'Neon Glow Border', icon: 'zap' },
+  { id: 'vintage', name: 'Vintage Stationery', icon: 'feather' },
+  { id: 'dotted', name: 'Dotted Tech', icon: 'grid' },
+  { id: 'gradient', name: 'Gradient Aura', icon: 'palette' },
+  { id: 'none', name: 'None (No Frame)', icon: 'ban' }
 ];
 
 export const SCENES = [
   {
     id: 'aurora',
     name: 'Aurora',
-    icon: '🌌',
+    icon: 'sparkles',
     desc: 'Shimmering Northern Lights waves & deep stellar atmosphere',
     paletteIndex: 0,
     font: 'Outfit',
@@ -90,7 +91,7 @@ export const SCENES = [
   {
     id: 'moonlight',
     name: 'Moonlight',
-    icon: '🌙',
+    icon: 'moon',
     desc: 'Luminous moon, subtle clouds & peaceful night glow',
     paletteIndex: 1,
     font: 'Playfair Display',
@@ -102,7 +103,7 @@ export const SCENES = [
   {
     id: 'rain',
     name: 'Rainy Window',
-    icon: '🌧️',
+    icon: 'cloud-rain',
     desc: 'Sliding rain streaks, glass condensation & soft blue mood',
     paletteIndex: 2,
     font: 'Inter',
@@ -114,7 +115,7 @@ export const SCENES = [
   {
     id: 'cloudy',
     name: 'Cloudy Dream',
-    icon: '☁️',
+    icon: 'cloud',
     desc: 'Floating fluffy clouds & tranquil pastel twilight',
     paletteIndex: 4,
     font: 'Caveat',
@@ -126,7 +127,7 @@ export const SCENES = [
   {
     id: 'dreamy',
     name: 'Dreamy Bokeh',
-    icon: '✨',
+    icon: 'sun',
     desc: 'Soft glowing bokeh orbs & warm fairy light atmosphere',
     paletteIndex: 0,
     font: 'Dancing Script',
@@ -138,7 +139,7 @@ export const SCENES = [
   {
     id: 'sakura',
     name: 'Soft Sakura',
-    icon: '🌸',
+    icon: 'flower-2',
     desc: 'Falling cherry blossom petals & warm pastel ambiance',
     paletteIndex: 3,
     font: 'Playfair Display',
@@ -150,7 +151,7 @@ export const SCENES = [
   {
     id: 'paper',
     name: 'Warm Paper',
-    icon: '📜',
+    icon: 'scroll',
     desc: 'Vintage luxury stationery, ink texture & golden frame',
     paletteIndex: 5,
     font: 'Caveat',
@@ -162,7 +163,7 @@ export const SCENES = [
   {
     id: 'glass',
     name: 'Glassmorphism',
-    icon: '🪩',
+    icon: 'layers',
     desc: 'Frosted refractive glass panel with vivid vibrant backlight',
     paletteIndex: 8,
     font: 'Outfit',
@@ -174,7 +175,7 @@ export const SCENES = [
   {
     id: 'ocean',
     name: 'Ocean Deep',
-    icon: '🌊',
+    icon: 'waves',
     desc: 'Underwater caustics, soft ripples & bioluminescent glow',
     paletteIndex: 4,
     font: 'Montserrat',
@@ -186,7 +187,7 @@ export const SCENES = [
   {
     id: 'city',
     name: 'City Lights',
-    icon: '🌃',
+    icon: 'building-2',
     desc: 'Nocturnal metropolis bokeh with vibrant neon street glow',
     paletteIndex: 9,
     font: 'Inter',
@@ -198,7 +199,7 @@ export const SCENES = [
   {
     id: 'nature',
     name: 'Emerald Forest',
-    icon: '🌿',
+    icon: 'trees',
     desc: 'Fresh foliage highlights, floating leaves & organic calmness',
     paletteIndex: 6,
     font: 'Playfair Display',
@@ -210,7 +211,7 @@ export const SCENES = [
   {
     id: 'minimal',
     name: 'Dark Minimal',
-    icon: '🖤',
+    icon: 'box',
     desc: 'Monochrome luxury, subtle geometric grid & razor sharp lines',
     paletteIndex: 8,
     font: 'Inter',
@@ -222,7 +223,7 @@ export const SCENES = [
   {
     id: 'purple',
     name: 'Lavender Dream',
-    icon: '💜',
+    icon: 'zap',
     desc: 'Velvet purple atmosphere with ethereal fairy dust',
     paletteIndex: 0,
     font: 'Outfit',
@@ -234,7 +235,7 @@ export const SCENES = [
   {
     id: 'cinematic',
     name: 'Cinematic Flare',
-    icon: '🎞️',
+    icon: 'film',
     desc: 'Anamorphic flare, film grain and widescreen aesthetic',
     paletteIndex: 10,
     font: 'Cinzel',
@@ -369,38 +370,38 @@ export const PALETTES = [
 ];
 
 export const DOODLE_LIBRARY = [
-  { id: 'spark', name: 'Sparkles', icon: '✦', defaultAmount: 14 },
-  { id: 'stars', name: 'Stars', icon: '⭐', defaultAmount: 10 },
-  { id: 'twinkle', name: 'Twinkles', icon: '✨', defaultAmount: 12 },
-  { id: 'rain', name: 'Rain Streaks', icon: '🌧️', defaultAmount: 24 },
-  { id: 'drizzle', name: 'Gentle Drizzle', icon: '💧', defaultAmount: 16 },
-  { id: 'petals', name: 'Sakura Petals', icon: '🌸', defaultAmount: 12 },
-  { id: 'snow', name: 'Snow Flakes', icon: '❄️', defaultAmount: 18 },
-  { id: 'hearts', name: 'Floating Hearts', icon: '❤️', defaultAmount: 8 },
-  { id: 'butterflies', name: 'Butterflies', icon: '🦋', defaultAmount: 5 },
-  { id: 'clouds', name: 'Floating Clouds', icon: '☁️', defaultAmount: 4 },
-  { id: 'bubbles', name: 'Bubbles', icon: '🫧', defaultAmount: 10 },
-  { id: 'ribbons', name: 'Ribbons / Confetti', icon: '🎀', defaultAmount: 14 },
-  { id: 'orbit', name: 'Orbit Rings', icon: '➰', defaultAmount: 6 },
-  { id: 'shooting_star', name: 'Shooting Stars', icon: '☄️', defaultAmount: 3 },
-  { id: 'doodles', name: 'Hand Doodles', icon: '✏️', defaultAmount: 8 }
+  { id: 'spark', name: 'Sparkles', icon: 'sparkle', defaultAmount: 14 },
+  { id: 'stars', name: 'Stars', icon: 'star', defaultAmount: 10 },
+  { id: 'twinkle', name: 'Twinkles', icon: 'sparkles', defaultAmount: 12 },
+  { id: 'rain', name: 'Rain Streaks', icon: 'cloud-rain', defaultAmount: 24 },
+  { id: 'drizzle', name: 'Gentle Drizzle', icon: 'droplets', defaultAmount: 16 },
+  { id: 'petals', name: 'Sakura Petals', icon: 'flower-2', defaultAmount: 12 },
+  { id: 'snow', name: 'Snow Flakes', icon: 'snowflake', defaultAmount: 18 },
+  { id: 'hearts', name: 'Floating Hearts', icon: 'heart', defaultAmount: 8 },
+  { id: 'butterflies', name: 'Butterflies', icon: 'wind', defaultAmount: 5 },
+  { id: 'clouds', name: 'Floating Clouds', icon: 'cloud', defaultAmount: 4 },
+  { id: 'bubbles', name: 'Bubbles', icon: 'circle-dot', defaultAmount: 10 },
+  { id: 'ribbons', name: 'Ribbons / Confetti', icon: 'party-popper', defaultAmount: 14 },
+  { id: 'orbit', name: 'Orbit Rings', icon: 'orbit', defaultAmount: 6 },
+  { id: 'shooting_star', name: 'Shooting Stars', icon: 'flame', defaultAmount: 3 },
+  { id: 'doodles', name: 'Hand Doodles', icon: 'pen-tool', defaultAmount: 8 }
 ];
 
 export const ANIMATIONS = [
-  { id: 'type', name: 'Typewriter', icon: '⌨️', desc: 'Classic char-by-char with glowing cursor' },
-  { id: 'fade', name: 'Soft Fade', icon: '✨', desc: 'Silky smooth opacity reveal' },
-  { id: 'pop', name: 'Pop Bounce', icon: '💫', desc: 'Elastic bouncy entrance' },
-  { id: 'slide_up', name: 'Slide Up', icon: '⬆️', desc: 'Smooth upward glide' },
-  { id: 'slide_down', name: 'Slide Down', icon: '⬇️', desc: 'Gentle downward drop' },
-  { id: 'slide_left', name: 'Slide Left', icon: '⬅️', desc: 'Lateral entrance from right' },
-  { id: 'slide_right', name: 'Slide Right', icon: '➡️', desc: 'Lateral entrance from left' },
-  { id: 'zoom_in', name: 'Zoom In', icon: '🔍', desc: 'Dramatic depth scale-up' },
-  { id: 'wave', name: 'Wave Motion', icon: '🌊', desc: 'Dynamic sine wave bouncing letters' },
-  { id: 'cascade', name: 'Letter Cascade', icon: '🔤', desc: 'Cascading staggered character drops' },
-  { id: 'cinematic', name: 'Cinematic Reveal', icon: '🎞️', desc: 'Soft blur to sharp cinematic lens focus' },
-  { id: 'handwriting', name: 'Handwriting', icon: '✍️', desc: 'Stroke by stroke handwriting flow' },
-  { id: 'neon', name: 'Neon Flicker', icon: '💡', desc: 'Electric pulsing tube ignition' },
-  { id: 'retype', name: 'Type & Retype', icon: '⌫', desc: 'Types, pauses, deletes, and re-types' }
+  { id: 'type', name: 'Typewriter', icon: 'keyboard', desc: 'Classic char-by-char with glowing cursor' },
+  { id: 'fade', name: 'Soft Fade', icon: 'sun', desc: 'Silky smooth opacity reveal' },
+  { id: 'pop', name: 'Pop Bounce', icon: 'maximize-2', desc: 'Elastic bouncy entrance' },
+  { id: 'slide_up', name: 'Slide Up', icon: 'arrow-up', desc: 'Smooth upward glide' },
+  { id: 'slide_down', name: 'Slide Down', icon: 'arrow-down', desc: 'Gentle downward drop' },
+  { id: 'slide_left', name: 'Slide Left', icon: 'arrow-left', desc: 'Lateral entrance from right' },
+  { id: 'slide_right', name: 'Slide Right', icon: 'arrow-right', desc: 'Lateral entrance from left' },
+  { id: 'zoom_in', name: 'Zoom In', icon: 'zoom-in', desc: 'Dramatic depth scale-up' },
+  { id: 'wave', name: 'Wave Motion', icon: 'activity', desc: 'Dynamic sine wave bouncing letters' },
+  { id: 'cascade', name: 'Letter Cascade', icon: 'list-ordered', desc: 'Cascading staggered character drops' },
+  { id: 'cinematic', name: 'Cinematic Reveal', icon: 'film', desc: 'Soft blur to sharp cinematic lens focus' },
+  { id: 'handwriting', name: 'Handwriting', icon: 'pen-tool', desc: 'Stroke by stroke handwriting flow' },
+  { id: 'neon', name: 'Neon Flicker', icon: 'zap', desc: 'Electric pulsing tube ignition' },
+  { id: 'retype', name: 'Type & Retype', icon: 'repeat', desc: 'Types, pauses, deletes, and re-types' }
 ];
 
 export const FONTS = [

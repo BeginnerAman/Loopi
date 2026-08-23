@@ -12,6 +12,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -21,7 +24,7 @@
     <!-- Top Navigation Header -->
     <header class="topNav">
       <div class="brand">
-        <div class="brandLogo">✦</div>
+        <div class="brandLogo"><i data-lucide="sparkles"></i></div>
         <div class="brandInfo">
           <h1>DP Motion Studio</h1>
           <p>Animated Profile Creator · 1:1 · Permanent Zero Watermark</p>
@@ -30,13 +33,13 @@
 
       <div class="topActions">
         <button class="topActionBtn" id="surpriseBtn" title="Harmonious Random Design">
-          <span>🎲</span> Surprise Me
+          <i data-lucide="dices"></i> <span>Surprise Me</span>
         </button>
         <button class="topActionBtn primary" id="autoStyleBtn" title="Intelligent Theme Matcher">
-          <span>🧠</span> Auto Style
+          <i data-lucide="wand-2"></i> <span>Auto Style</span>
         </button>
         <button class="topActionBtn" id="replayBtn" title="Replay Animation">
-          <span>↻</span>
+          <i data-lucide="rotate-ccw"></i>
         </button>
       </div>
     </header>
@@ -63,7 +66,9 @@
         <!-- Live Interactive Timeline Scrubber -->
         <div class="timelineComponent">
           <div class="timelineControls">
-            <button class="timelinePlayBtn" id="playPauseBtn" title="Play/Pause">⏸</button>
+            <button class="timelinePlayBtn" id="playPauseBtn" title="Play/Pause">
+              <i data-lucide="pause" id="playPauseIcon"></i>
+            </button>
             <span class="timelineTime" id="timelineTime">0.0s / 3.5s</span>
           </div>
           <div class="timelineTrack" id="timelineTrack">
@@ -79,9 +84,9 @@
         <div class="accordionItem open">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>💬</span> Message & Presets
+              <i data-lucide="message-square"></i> <span>Message & Presets</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="controlRow">
@@ -99,25 +104,30 @@
         <div class="accordionItem">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>🌌</span> Visual Scene & Atmosphere (14 Presets)
+              <i data-lucide="sparkles"></i> <span>Visual Scene & Atmosphere (14 Presets)</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="scenesGrid" id="scenesGrid"></div>
 
             <!-- Frame Studio Controls -->
-            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);">
-              <div class="inputLabel" style="margin-bottom: 8px;">🖼️ Frame Studio & Borders</div>
+            <div class="frameStudioSection">
+              <div class="frameStudioTitle">
+                <i data-lucide="frame"></i> <span>Frame Studio & Borders</span>
+              </div>
 
               <div class="grid2 controlRow">
                 <div>
                   <label class="inputLabel" for="frameStyleSelect">Frame Style</label>
                   <select id="frameStyleSelect" class="formSelect"></select>
                 </div>
-                <div class="colorPickerRow" style="margin-top: 19px;">
-                  <span>Frame Color</span>
-                  <input type="color" id="frameColorPicker" class="colorSwatchInput" value="#aa91ff">
+                <div>
+                  <label class="inputLabel">Frame Color</label>
+                  <div class="colorPickerRow">
+                    <span>Color</span>
+                    <input type="color" id="frameColorPicker" class="colorSwatchInput" value="#aa91ff">
+                  </div>
                 </div>
               </div>
 
@@ -132,7 +142,7 @@
                 </div>
               </div>
 
-              <label class="checkboxLabel" style="margin-top: 4px;">
+              <label class="checkboxLabel" style="margin-top: 6px;">
                 <input type="checkbox" id="showFrame" checked> Enable Frame / Border
               </label>
             </div>
@@ -143,9 +153,9 @@
         <div class="accordionItem">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>🎨</span> Color Studio & Palettes
+              <i data-lucide="palette"></i> <span>Color Studio & Palettes</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="controlRow">
@@ -196,9 +206,9 @@
         <div class="accordionItem">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>✏️</span> Typography & Text Styling
+              <i data-lucide="type"></i> <span>Typography & Text Styling</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="grid2 controlRow">
@@ -267,9 +277,12 @@
                 <label class="inputLabel">Stroke Width: <span id="strokeWidthOut">0</span>px</label>
                 <input type="range" id="strokeWidth" class="rangeInput" min="0" max="10" value="0">
               </div>
-              <div class="colorPickerRow">
-                <span>Stroke Color</span>
-                <input type="color" id="strokeColorPicker" class="colorSwatchInput" value="#000000">
+              <div>
+                <label class="inputLabel">Stroke Color</label>
+                <div class="colorPickerRow">
+                  <span>Color</span>
+                  <input type="color" id="strokeColorPicker" class="colorSwatchInput" value="#000000">
+                </div>
               </div>
             </div>
 
@@ -313,9 +326,9 @@
         <div class="accordionItem">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>✨</span> Doodles & Multi-Particles (Combine 2–3)
+              <i data-lucide="sparkles"></i> <span>Doodles & Multi-Particles (Combine 2–3)</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="controlRow">
@@ -351,9 +364,9 @@
         <div class="accordionItem">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>🎬</span> Animation & Motion Styles (14 Styles)
+              <i data-lucide="clapperboard"></i> <span>Animation & Motion Styles (14 Styles)</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="animGrid" id="animGrid"></div>
@@ -378,9 +391,9 @@
         <div class="accordionItem">
           <div class="accordionHeader">
             <div class="accordionHeaderIcon">
-              <span>🚀</span> Export Studio (Permanent No Watermark)
+              <i data-lucide="download"></i> <span>Export Studio (Permanent No Watermark)</span>
             </div>
-            <span class="accordionArrow">▼</span>
+            <i data-lucide="chevron-down" class="accordionArrow"></i>
           </div>
           <div class="accordionBody">
             <div class="grid2 controlRow">
@@ -405,18 +418,18 @@
 
             <div class="exportButtons">
               <button class="btnExport primary" id="exportGifBtn">
-                <span>⬇️</span> Download GIF
+                <i data-lucide="download"></i> <span>Download GIF</span>
               </button>
               <button class="btnExport" id="exportMp4Btn">
-                <span>🎥</span> Download MP4
+                <i data-lucide="video"></i> <span>Download MP4</span>
               </button>
               <button class="btnExport" id="exportPngBtn">
-                <span>📸</span> Save PNG
+                <i data-lucide="image"></i> <span>Save PNG</span>
               </button>
             </div>
 
             <p class="exportHint">
-              ✨ 100% Watermark-Free forever. Exports render locally inside your browser with optimized compression.
+              100% Watermark-Free forever. Exports render locally inside your browser with optimized compression.
             </p>
           </div>
         </div>
@@ -438,7 +451,7 @@
   </div>
 
   <!-- Floating Toast Notification -->
-  <div class="toast" id="toast">✨ Action complete!</div>
+  <div class="toast" id="toast">Action complete!</div>
 
   <!-- App Entry Script -->
   <script type="module" src="js/app.js"></script>

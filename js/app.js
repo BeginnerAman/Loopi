@@ -1,6 +1,6 @@
 /**
  * DP Creator Studio V4 - Main App Controller & State Management
- * Mobile-First, 60fps Canvas Loop, Multi-Doodle Layering, AI Auto-Style, Frame Studio, Telegram DP Mask
+ * Lucide Icons Integration, Mobile-First 60fps Loop, Frame Studio
  */
 
 import {
@@ -48,10 +48,10 @@ class DPStudioApp {
         gradientStart: '#aa91ff',
         gradientEnd: '#d8cbff'
       },
-      colorMode: 'solid', // 'solid', 'gradient', 'rainbow', 'glow'
+      colorMode: 'solid',
       
       // Frame Studio
-      frameStyle: 'corners', // 'none', 'corners', 'box', 'double', 'neon', 'vintage', 'dotted', 'gradient'
+      frameStyle: 'neon',
       frameColor: null,
       frameWidth: 2,
       framePadding: 26,
@@ -80,7 +80,7 @@ class DPStudioApp {
       scale: 100,
       maxWidth: 82,
 
-      // Doodles & Particles (Multi-selection enabled)
+      // Doodles & Particles
       activeDoodles: ['spark', 'twinkle'],
       doodleConfig: {
         amount: 14,
@@ -98,7 +98,7 @@ class DPStudioApp {
       holdDuration: 2.5,
 
       // UI Views
-      previewMode: 'canvas', // 'canvas' | 'telegram' | 'fullscreen'
+      previewMode: 'canvas',
       isExporting: false
     };
 
@@ -115,6 +115,7 @@ class DPStudioApp {
     this.buildFontsUI();
     this.bindEvents();
     this.syncUIFromState();
+    this.refreshLucideIcons();
 
     // Start 60fps render loop
     const loop = (now) => {
@@ -122,6 +123,12 @@ class DPStudioApp {
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
+  }
+
+  refreshLucideIcons() {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
   }
 
   getCurrentPalette() {
@@ -285,7 +292,7 @@ class DPStudioApp {
     FRAME_STYLES.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f.id;
-      opt.textContent = `${f.icon} ${f.name}`;
+      opt.textContent = f.name;
       select.appendChild(opt);
     });
   }
@@ -300,7 +307,7 @@ class DPStudioApp {
       btn.className = `sceneCard ${sc.id === this.state.sceneId ? 'active' : ''}`;
       btn.dataset.id = sc.id;
       btn.innerHTML = `
-        <div class="sceneIcon">${sc.icon}</div>
+        <div class="sceneIcon"><i data-lucide="${sc.icon}"></i></div>
         <div class="sceneMeta">
           <b>${sc.name}</b>
           <small>${sc.desc}</small>
@@ -367,7 +374,7 @@ class DPStudioApp {
       const isSelected = this.state.activeDoodles.includes(d.id);
       btn.className = `doodleChip ${isSelected ? 'active' : ''}`;
       btn.dataset.id = d.id;
-      btn.innerHTML = `<span>${d.icon}</span> ${d.name}`;
+      btn.innerHTML = `<i data-lucide="${d.icon}"></i> <span>${d.name}</span>`;
 
       btn.onclick = () => {
         const cur = this.state.activeDoodles;
@@ -404,7 +411,7 @@ class DPStudioApp {
       btn.className = `animCard ${a.id === this.state.animMode ? 'active' : ''}`;
       btn.dataset.id = a.id;
       btn.innerHTML = `
-        <div class="animIcon">${a.icon}</div>
+        <div class="animIcon"><i data-lucide="${a.icon}"></i></div>
         <div class="animMeta">
           <b>${a.name}</b>
           <small>${a.desc}</small>
@@ -466,7 +473,7 @@ class DPStudioApp {
 
     this.timeline.reset();
     this.syncUIFromState();
-    this.showToast('✨ New Design Created!');
+    this.showToast('New Design Created!');
   }
 
   // 🧠 "Auto Style": Intelligent Aesthetic Matcher
@@ -475,7 +482,7 @@ class DPStudioApp {
 
     if (text.includes('hello') || text.includes('😊') || text.includes('cute')) {
       this.state.sceneId = 'purple';
-      this.state.paletteIndex = 0; // Lavender Dream
+      this.state.paletteIndex = 0;
       this.state.font = 'Outfit';
       this.state.animMode = 'type';
       this.state.frameStyle = 'neon';
@@ -483,7 +490,7 @@ class DPStudioApp {
       this.state.glowBlur = 28;
     } else if (text.includes('❤️') || text.includes('love') || text.includes('sweet')) {
       this.state.sceneId = 'sakura';
-      this.state.paletteIndex = 2; // Rose Dust
+      this.state.paletteIndex = 2;
       this.state.font = 'Playfair Display';
       this.state.animMode = 'pop';
       this.state.frameStyle = 'vintage';
@@ -491,21 +498,21 @@ class DPStudioApp {
       this.state.glowBlur = 30;
     } else if (text.includes('morning') || text.includes('☀️') || text.includes('sun')) {
       this.state.sceneId = 'nature';
-      this.state.paletteIndex = 7; // Sunset / Golden
+      this.state.paletteIndex = 7;
       this.state.font = 'Outfit';
       this.state.animMode = 'slide_up';
       this.state.frameStyle = 'double';
       this.state.activeDoodles = ['twinkle', 'spark'];
     } else if (text.includes('night') || text.includes('🌙') || text.includes('dream')) {
       this.state.sceneId = 'moonlight';
-      this.state.paletteIndex = 1; // Midnight Blue
+      this.state.paletteIndex = 1;
       this.state.font = 'Playfair Display';
       this.state.animMode = 'cinematic';
       this.state.frameStyle = 'corners';
       this.state.activeDoodles = ['stars', 'shooting_star'];
     } else if (text.includes('coffee') || text.includes('☕') || text.includes('note')) {
       this.state.sceneId = 'paper';
-      this.state.paletteIndex = 5; // Warm Coffee
+      this.state.paletteIndex = 5;
       this.state.font = 'Caveat';
       this.state.animMode = 'handwriting';
       this.state.frameStyle = 'vintage';
@@ -521,7 +528,7 @@ class DPStudioApp {
 
     this.timeline.reset();
     this.syncUIFromState();
-    this.showToast('🧠 Auto Styled Perfectly!');
+    this.showToast('Auto Styled Perfectly!');
   }
 
   showToast(msg) {
@@ -613,6 +620,7 @@ class DPStudioApp {
     this.syncDoodlesUI();
     this.syncAnimUI();
     this.highlightActivePreset();
+    this.refreshLucideIcons();
   }
 
   bindEvents() {
@@ -624,7 +632,11 @@ class DPStudioApp {
     $('replayBtn').onclick = () => this.timeline.reset();
     $('playPauseBtn').onclick = () => {
       this.timeline.togglePlay();
-      $('playPauseBtn').textContent = this.timeline.isPaused ? '▶' : '⏸';
+      const icon = $('playPauseBtn').querySelector('i');
+      if (icon) {
+        icon.setAttribute('data-lucide', this.timeline.isPaused ? 'play' : 'pause');
+        this.refreshLucideIcons();
+      }
     };
 
     // Text Input
@@ -881,13 +893,13 @@ class DPStudioApp {
         );
       }
 
-      exportStatus.textContent = '✅ Download complete!';
+      exportStatus.textContent = 'Download complete!';
       setTimeout(() => {
         modal.classList.remove('visible');
         this.state.isExporting = false;
       }, 1500);
     } catch (err) {
-      exportStatus.textContent = `❌ Export error: ${err.message}`;
+      exportStatus.textContent = `Export error: ${err.message}`;
       setTimeout(() => {
         modal.classList.remove('visible');
         this.state.isExporting = false;
