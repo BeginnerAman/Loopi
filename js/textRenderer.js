@@ -59,7 +59,7 @@ export class TextRenderer {
   }
 
   draw(ctx, W, H, time, elapsed, config, palette, timing) {
-    const rawText = config.text || 'Hello, Aman Here...✨';
+    const rawText = config.text || 'Hello Ji...😊';
     const fs = config.fontSize || 50;
     const fontName = config.font || 'Outfit';
     const fontWeight = config.fontWeight || '600';

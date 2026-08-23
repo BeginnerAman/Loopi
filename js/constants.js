@@ -3,7 +3,7 @@
  * Clean UI Lucide icon mappings, Quick Emojis, and Universal Presets
  */
 
-export const DEFAULT_TEXT = 'Hello, Aman Here...✨';
+export const DEFAULT_TEXT = 'Hello Ji...😊';
 
 export const QUICK_EMOJIS = [
   '✨', '😊', '🌸', '🌙', '💖', '☀️', '👀', '☕', '🦋', '🕊️', '❄️', '🔥', '💫', '🌹', '🤍', '🎉', '⚡', '🖤'
@@ -11,14 +11,13 @@ export const QUICK_EMOJIS = [
 
 export const MESSAGE_PRESETS = [
   {
-    category: 'Signature & Intro',
+    category: 'Cute & Friendly',
     items: [
-      'Hello, Aman Here...✨',
-      'Aman Here 🌿',
-      'Aman\'s Motion DP ✦',
-      'Suniye na ✨',
+      'Hello Ji...😊',
       'Smile please 😊',
-      'Hello Ji...😊'
+      'Arey... 👋',
+      'Kaise hain aap? 🌿',
+      'Aur batao ... ☕'
     ]
   },
   {
@@ -57,7 +56,7 @@ export const MESSAGE_PRESETS = [
   {
     category: 'Morning & Night',
     items: [
-      'Good Morning Ji... ☀️',
+      'Good Morning ☀️',
       'Subah Bakhair 🌅',
       'Good Night 🌙',
       'Have a blessed day 🌿'
