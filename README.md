@@ -1,15 +1,17 @@
+Website: [DP Motion Studio](https://BeginnerAman.github.io/Loopi/)
+
 # DP Motion Studio
 
 A mobile-optimized, high-performance 1:1 animated profile display picture (DP) creator built with HTML5 Canvas, modern CSS, and modular vanilla JavaScript.
 
 ## Features
 
-- 14 Visual Scenes: Pre-configured atmospheric canvas environments including Aurora, Moonlight, Rainy Window, Cloudy Dream, Dreamy Bokeh, Soft Sakura, Warm Paper, Glassmorphism, Ocean Deep, City Lights, Emerald Forest, Dark Minimal, Lavender Dream, and Cinematic Flare.
-- Frame Studio: 8 customizable border frame styles (Modern Corners, Classic Rectangle, Double Border, Neon Glow, Vintage Stationery, Dotted Tech, Gradient Aura, or None/Hidden) with custom color, thickness, and padding controls.
-- Multi-Layer Particle Engine: Object-pooled 60 FPS physics renderer supporting simultaneous particle layers such as Sparkles, Stars, Twinkles, Rain streaks, Drizzle, Sakura petals, Snowflakes, Floating hearts, Butterflies, Clouds, Bubbles, Ribbons, Orbit rings, Shooting stars, and Hand doodles.
-- Deep Typography Controls: Text styling with Solid, Linear Gradient, Dynamic Rainbow Shift, and Luminous Glow options. Includes Font Family selection, Weight, Italic toggle, Letter Spacing, Line Height, Text Opacity, Stroke Outline with custom width and color, Drop Shadow, and Glow Blur.
+- 14 Visual Scenes: Pre-configured atmospheric canvas environments including Aurora, Moonlight, Rainy Window, Cloudy Dream, Dreamy Bokeh, Soft Sakura, Warm Paper, Glassmorphism, Ocean Deep, City Lights, and more.
+- Frame Studio: 8 customizable border frame styles (Modern Corners, Classic Rectangle, Double Border, Neon Glow, Vintage Stationery, Dotted Tech, Gradient Aura, or None/Hidden) with custom color and thickness controls.
+- Multi-Layer Particle Engine: Object-pooled 60 FPS physics renderer supporting simultaneous particle layers such as Sparkles, Stars, Twinkles, Rain streaks, Drizzle, Sakura petals, Snowflakes, Flows, and more.
+- Deep Typography Controls: Text styling with Solid, Linear Gradient, Dynamic Rainbow Shift, and Luminous Glow options. Includes Font Family selection, Weight, Italic toggle, Letter Spacing, Line Height, and alignment controls.
 - Layout and Transformations: Real-time controls for Horizontal X position, Vertical Y position, Rotation (-30 deg to +30 deg), Scale (50% to 150%), and Max Width wrapping.
-- 14 Animation Styles: Typewriter with blinking cursor, Soft Fade, Pop Bounce, Slide Up, Slide Down, Slide Left, Slide Right, Zoom In, Wave Motion, Letter Cascade, Cinematic Reveal, Handwriting Draw, Neon Flicker, and Type and Retype.
+- 14 Animation Styles: Typewriter with blinking cursor, Soft Fade, Pop Bounce, Slide Up, Slide Down, Slide Left, Slide Right, Zoom In, Wave Motion, Letter Cascade, Cinematic Reveal, Handwriting Draw, Glitch, and Elastic Pop.
 - Emoji-Aware Motion: Animated sequence where primary text reveals first, followed by an energetic pop scale and radial flare burst on trailing emojis.
 - Telegram and WhatsApp DP Safe Zone Preview: Real-time circular crop mask overlay to verify profile picture framing before export.
 - Interactive Timeline: Scrubbable progress bar for reviewing frame-by-frame animation at specific timestamps.
@@ -18,7 +20,7 @@ A mobile-optimized, high-performance 1:1 animated profile display picture (DP) c
 
 ## Project Structure
 
-```
+```text
 Loopi/
 ├── index.html          # Semantic entry point and UI layout
 ├── README.md           # Documentation
@@ -38,7 +40,7 @@ Loopi/
 
 ### Local Development
 
-No build tools or package installations required. Run with any local HTTP server:
+No build tools or package installations are required. Run with any local HTTP server:
 
 ```bash
 # Using Python 3
@@ -53,6 +55,7 @@ Open `http://localhost:8080` in your desktop or mobile browser.
 ### GitHub Pages Deployment
 
 1. Initialize Git and commit the files:
+
    ```bash
    git init
    git add .
@@ -60,6 +63,7 @@ Open `http://localhost:8080` in your desktop or mobile browser.
    ```
 
 2. Link to your GitHub repository and push:
+
    ```bash
    git branch -M main
    git remote add origin https://github.com/BeginnerAman/Loopi.git
